@@ -111,7 +111,7 @@ function shellInit() {
 	// breakme
 	sc = new ShellCommand();
 	sc.command = "breakme";
-	sc.description = "use this at your own peril, does not bsod, I pwomise"
+	sc.description = "- Use this at your own peril, does not bsod, I pwomise"
 	sc.function = shellBreak;
 	this.commandList[this.commandList.length] = sc;
 
@@ -286,7 +286,7 @@ function shellInvalidCommand()
     _StdIn.putText("Invalid Command. ");
     if (_SarcasticMode)
     {
-        _StdIn.putText("But your too stupid to know that huh?");
+        _StdIn.putText("But you're too stupid to know that huh?");
     }
     else
     {
@@ -443,7 +443,7 @@ function shellTrace(args)
             case "on": 
                 if (_Trace && _SarcasticMode)
                 {
-                    _StdIn.putText("Trace is already on, dumbass.");
+                    _StdIn.putText("Trace is already on, bakemono.");
                 }
                 else
                 {
