@@ -284,7 +284,7 @@ function krnKbdDispatchKeyPress(params)
 			{
 				if(!isShifted)
 				{
-					krnTrapError("you typed something wrong");
+					krnTrace("you typed something wrong meanie");
 					break;
 				}
 			}

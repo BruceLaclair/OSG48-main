@@ -11,7 +11,7 @@ function Shell() {
     this.promptStr   = ">";
     this.commandList = [];
     this.curses      = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
-    this.apologies   = "[sorry]";
+    this.apologies   = "[sorry], [gomenen], [gomen], [gomenasai]";
     // Methods
     this.init        = shellInit;
     this.putPrompt   = shellPutPrompt;
@@ -80,6 +80,13 @@ function shellInit() {
     sc.function = shellHelp;
     this.commandList[this.commandList.length] = sc;
     
+	// run <int>
+	sc = new ShellCommand();
+	sc.command = "run";
+	sc.description = "- If you type this command I will start executing the program at the specified pid on the next cycle";
+	sc.function = shellRun;
+	this.commandList[this.commandList.length] = sc;
+	
     // shutdown
     sc = new ShellCommand();
     sc.command = "shutdown";
@@ -357,19 +364,97 @@ function shellNihaha(args)
 }
 
 function shellLoad(args)
-{	
+{
 	var programInput = document.getElementById("taProgramInput").value;
 	//checks for the existence of any characters that isn't hex and return true if it is.
 	var hexValidator =  /[g-z]/gi;
 	if(!hexValidator.test(programInput))
 	{
-	document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanHappy.jpg\" alt = \"Natsu-chan\"></label>"
-		_StdIn.putText("Yay you didn't make a mistake, so I put it in memory for you, I hope your happy");
+		document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanHappy.jpg\" alt = \"Natsu-chan\"></label>"
+		//a _PID global that determines where in memory to place the program
+		if(_PID === 3)
+		{
+			_StdIn.putText("Swrry memory is full");
+		}
+		else
+		{
+		//Checks where to start adding the program to memory.
+			if(_PID === 0)
+			{
+				var i = 0;
+			}
+			else if(_PID === 1)
+			{
+				var i = 256;
+			}
+			else
+			{
+				var i = 512;
+			}
+			//Go through the program being entered and add it to memory, the real memory.
+			var toBeEntered = programInput.split(" ");
+			var j = 0;
+			while (j < toBeEntered.length)
+			{
+				_Memory.memory[i] = toBeEntered[j];
+				document.getElementById(i).innerHTML=_Memory.memory[i];
+				j++;
+				i++;
+			}
+			_StdIn.putText("Yay you didn't make a mistake, you can call it with pid " + _PID++ + ", I hope your happy");
+		}
 	}
 	else
 	{
 	document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanAngry.jpg\" alt = \"Natsu-chan\"></label>"
 		_StdIn.putText("baka why are you so bad at this game");
+	}
+}
+
+function shellRun(args)
+{
+	 if (args.length === 1)
+    { 
+		if(args[0] === "0")
+		{
+			_CPU.PC = 0;
+			document.getElementById("PC").innerHTML=_CPU.PC;
+			_CPU.isExecuting = true;
+		}
+		else if(args[0] === "1")
+		{
+			_CPU.PC = 256;
+			document.getElementById("PC").innerHTML=_CPU.PC;
+			_CPU.isExecuting = true;
+		}
+		else if(args[0] === "2")
+		{
+				_CPU.pc = 512;
+				document.getElementById("PC").innerHTML=_CPU.PC;
+				_CPU.isExecuting = true;
+		}
+		else
+		{
+			if (!_SarcasticMode)
+			{
+			_StdIn.putText("Ummmmm me thinks you mistyped something...maybe ... the pid?");
+			}
+			else
+			{
+				_StdIn.putText("Must I tell you that your an idiot, or can you figure out your stupidity yourself?");
+			}
+		}
+	}
+	else
+	{
+		if (!_SarcasticMode)
+		{
+		_StdIn.putText("Ummmmm me thinks you forgots something...maybe ... the pid?");
+		}
+		else
+		{
+			_StdIn.putText("Must I tell you that your an idiot, or can you figure out your stupidity yourself?");
+		}
 	}
 }
 

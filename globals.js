@@ -25,6 +25,10 @@ var KEYBOARD_IRQ = 1;
 // Global Variables
 //
 var _CPU = null;
+var _Memory = null;
+
+//To do stuff with the memory
+var _PID = 0;
 
 var _OSclock = 0;       // Page 23.
 

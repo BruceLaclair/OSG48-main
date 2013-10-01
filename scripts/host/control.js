@@ -88,6 +88,10 @@ function hostBtnStartOS_click(btn)
     // ... Create and initialize the CPU ...
     _CPU = new Cpu();
     _CPU.init();
+	
+	// .... Create and initialize the memory...hopefully ...
+	_Memory = new memory();
+	_Memory.init();
 
     // ... then set the host clock pulse ...
     _hardwareClockID = setInterval(hostClockPulse, CPU_CLOCK_INTERVAL);
