@@ -66,7 +66,7 @@ function CLIconsole() {
 			//so that we can move through the stored commands.
 				if(this.index > 0)
 				{
-					var lastLine = memory[--this.index]
+					var lastLine = memory[--this.index];
 					while(this.buffer.length > 0)
 						{
 							this.removeText();

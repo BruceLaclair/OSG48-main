@@ -25,7 +25,7 @@ function memory(){
 			var limit = parseInt(locale,16);
 			if(limit >= 256)
 			{
-				krnTrapError("Hey! That's not yours to touch");
+				krnTrapError("Hey! Don't touch me there");
 			}
 			else
 			{
@@ -37,7 +37,7 @@ function memory(){
 			var limit = parseInt(locale,16);
 			if(limit >= 512)
 			{
-				krnTrapError("Hey! That's not yours to touch");
+				krnTrapError("Hey! Don't touch me there");
 			}
 			else
 			{
@@ -49,7 +49,7 @@ function memory(){
 			var limit = parseInt(locale,16);
 			if(limit >= 768)
 			{
-				krnTrapError("Hey! That's not yours to touch");
+				krnTrapError("Hey! Don't touch me there");
 			}
 			else
 			{

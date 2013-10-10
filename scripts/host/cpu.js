@@ -67,7 +67,7 @@ function Cpu() {
 				case "6D":
 				{
 					var adder = _Memory.memory[++this.PC];
-					this.Acc += parseInt(adder,16);
+					this.Acc = this.Acc + parseInt(_Memory.memory[_Memory.checkLimit(adder)], 16);
 					document.getElementById("ACC").innerHTML=this.Acc;
 					break;
 				}
@@ -152,14 +152,19 @@ function Cpu() {
 					if(this.Xreg === 1)
 					{
 						 _Console.putText(this.Yreg.toString(16));
+						 _Console.putText(" ");
 					}
 					else if(this.Xreg === 2)
 					{
-						if(_Memory.memory[this.Yreg] != 0)
+						if(_Memory.memory[this.Yreg] != 0 || _Memory.memory[this.Yreg] != "00")
 						{
 							_Console.putText(String.fromCharCode(parseInt(_Memory.memory[this.Yreg], 16)));
 							this.Yreg++;
 							this.PC--;
+						}
+						else
+						{
+							_Console.putText(" ");
 						}
 					}
 					break;

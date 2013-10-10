@@ -372,9 +372,10 @@ function shellLoad(args)
 	{
 		document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanHappy.jpg\" alt = \"Natsu-chan\"></label>"
 		//a _PID global that determines where in memory to place the program
-		if(_PID === 3)
+		if(_PID >= 3)
 		{
-			_StdIn.putText("Swrry memory is full");
+			_StdIn.putText("Swrry but my mammaries aren't that large...I meant memories");
+			document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanBlush.jpg\" alt = \"Natsu-chan\"></label>"
 		}
 		else
 		{
