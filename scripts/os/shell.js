@@ -87,6 +87,20 @@ function shellInit() {
 	sc.function = shellRun;
 	this.commandList[this.commandList.length] = sc;
 	
+	// runall
+	sc = new ShellCommand();
+	sc.command = "runall";
+	sc.description = "- If I have many many things in my mamories I will start executing all of dem for you";
+	sc.function = shellRunAll;
+	this.commandList[this.commandList.length] = sc;
+	
+	// quantum <int>
+	sc = new ShellCommand();
+	sc.command = "quantum";
+	sc.description = "- I will update the RR Quantum...Don't touch unless you know what you are doing";
+	sc.function = shellQuantum;
+	this.commandList[this.commandList.length] = sc;
+	
     // shutdown
     sc = new ShellCommand();
     sc.command = "shutdown";
@@ -235,7 +249,7 @@ function shellParseInput(buffer)
 
 function shellExecute(fn, args)
 {
-	if (!_SarcasticMode){
+	if (!_TsundereMode){
 		document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanStart.jpg\" alt = \"Natsu-chan\"></label>"
 	}
 	else
@@ -291,7 +305,7 @@ function UserCommand()
 function shellInvalidCommand()
 {
     _StdIn.putText("Invalid Command. ");
-    if (_SarcasticMode)
+    if (_TsundereMode)
     {
         _StdIn.putText("But you're too stupid to know that huh?");
     }
@@ -308,15 +322,15 @@ function shellCurse()
     _StdIn.putText("Meanie, see if I ever talk to you again");
     _StdIn.advanceLine();
     _StdIn.putText("Bakemono");
-    _SarcasticMode = true;
+    _TsundereMode = true;
 }
 
 function shellApology()
 {
-   if (_SarcasticMode) {
+   if (_TsundereMode) {
 	document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanStart.jpg\" alt = \"Natsu-chan\"></label>"
       _StdIn.putText("Well...sense you said sorry, I guess I can forgive you this once.");
-      _SarcasticMode = false;
+      _TsundereMode = false;
    } else {
       _StdIn.putText("For what?  Should I be worried? Did you do something wrong again?");
    }
@@ -340,7 +354,7 @@ function shellWhereami(args)
 
 function shellGao(args)
 {
-	if (!_SarcasticMode){
+	if (!_TsundereMode){
 		document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanBlush.jpg\" alt = \"Natsu-chan\"></label>"
 		_StdIn.putText("Ni ha ha");
 	}
@@ -352,7 +366,7 @@ function shellGao(args)
 
 function shellNihaha(args)
 {
-	if(!_SarcasticMode)
+	if(!_TsundereMode)
 	{
 		document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanHappy.jpg\" alt = \"Natsu-chan\"></label>"
 		_StdIn.putText("GAOOOOOOOOO");
@@ -382,14 +396,20 @@ function shellLoad(args)
 			if(_NumPrograms === 0)
 			{
 				var i = _BlockOne;
+				_PCB0 = new PCB();
+				_PCB0.init(_NumPrograms);
 			}
 			else if(_NumPrograms === 1)
 			{
 				var i = _BlockTwo;
+				_PCB1 = new PCB();
+				_PCB1.init(_NumPrograms);
 			}
 			else
 			{
 				var i = _BlockThree;
+				_PCB2 = new PCB();
+				_PCB2.init(_NumPrograms);
 			}
 			//Go through the program being entered and add it to memory, the real memory.
 			var toBeEntered = programInput.split(" ");
@@ -418,30 +438,30 @@ function shellRun(args)
 		if(args[0] === "0")
 		{
 			_CPU.PC = _BlockOne;
-			_PCB = new PCB();
-			_PCB.init(0);
+			_ReadyQueue.enqueue(_PCB0);
+			document.getElementById("RQ1").innerHTML=_PCB0.toString();
 			document.getElementById("PC").innerHTML=_CPU.PC;
 			_CPU.isExecuting = true;
 		}
 		else if(args[0] === "1")
 		{
 			_CPU.PC = _BlockTwo;
-			_PCB = new PCB();
-			_PCB.init(1);
+			_ReadyQueue.enqueue(_PCB1);
+			document.getElementById("RQ2").innerHTML=_PCB1.toString();
 			document.getElementById("PC").innerHTML=_CPU.PC;
 			_CPU.isExecuting = true;
 		}
 		else if(args[0] === "2")
 		{
-				_CPU.pc = _BlockThree;
-				_PCB = new PCB();
-				_PCB.init(2);
-				document.getElementById("PC").innerHTML=_CPU.PC;
-				_CPU.isExecuting = true;
+			_CPU.pc = _BlockThree;
+			_ReadyQueue.enqueue(_PCB2);
+			document.getElementById("RQ3").innerHTML=_PCB2.toString();
+			document.getElementById("PC").innerHTML=_CPU.PC;
+			_CPU.isExecuting = true;
 		}
 		else
 		{
-			if (!_SarcasticMode)
+			if (!_TsundereMode)
 			{
 			_StdIn.putText("Ummmmm me thinks you mistyped something...maybe ... the pid?");
 			}
@@ -453,7 +473,7 @@ function shellRun(args)
 	}
 	else
 	{
-		if (!_SarcasticMode)
+		if (!_TsundereMode)
 		{
 		_StdIn.putText("Ummmmm me thinks you forgots something...maybe ... the pid?");
 		}
@@ -462,6 +482,11 @@ function shellRun(args)
 			_StdIn.putText("Must I tell you that your an idiot, or can you figure out your stupidity yourself?");
 		}
 	}
+}
+
+function shellRunAll(args)
+{
+	_StdIn.putText("Do-du-duuuuuuuuuuuuuu");
 }
 
 function shellStatus(args)
@@ -479,7 +504,32 @@ function shellStatus(args)
 	document.getElementById('pstatusUpdate').innerHTML=status;
 }
 
-
+function shellQuantum(args)
+{
+	if (args.length > 0)
+	{
+		_Quantum = args[0];
+		if(!_TsundereMode)
+		{
+			_StdIn.putText("Kayyyyyyyy I adjusted the quantum to " + _Quantum + " for you");
+		}
+		else
+		{
+			_StdIn.putText("Quantum? I mean I changed it to " + _Quantum + "but do you know what it even means?");
+		}
+	}
+	else
+	{
+		if(!_TsundereMode)
+		{
+			_StdIn.putText("Ummm what did you want me to set it too again?");
+		}
+		else
+		{
+			_StdIn.putText("You have to be kidding me, no one can actually be this stupid can they? What do I set it too?");
+		}
+	}
+}
 function shellHelp(args)
 {
     _StdIn.putText("Commands:");
@@ -532,7 +582,7 @@ function shellTrace(args)
         switch (setting)
         {
             case "on": 
-                if (_Trace && _SarcasticMode)
+                if (_Trace && _TsundereMode)
                 {
                     _StdIn.putText("Trace is already on, bakemono.");
                 }
