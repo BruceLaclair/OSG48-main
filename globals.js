@@ -26,9 +26,21 @@ var KEYBOARD_IRQ = 1;
 //
 var _CPU = null;
 var _Memory = null;
+var _NumPrograms = 0; //Number of inputed programs so far
 
-//To do stuff with the memory
-var _PID = 0;
+//Setting up all of the possible control blocks
+var _PCB = null;
+/*
+*	To be used later
+*	var _PCB3 = null;
+*/
+
+//GLOBAL LIMITZ
+var _MaxMemory = 768;
+var _BlockSize = 255;
+var _BlockOne = 0;
+var _BlockTwo = 256;
+var _BlockThree = 512;
 
 var _OSclock = 0;       // Page 23.
 

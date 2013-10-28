@@ -43,7 +43,7 @@ function Cpu() {
 			var op = _Memory.memory[this.PC];
 			switch(op)
 			{
-			//switch on op codes to determine what todo, if all else fails increment the PC and move one
+			//switch on op codes to determine what todo, if all else fails increment the PC and move on
 				case "A9":
 				{
 					this.Acc = parseInt(_Memory.memory[++this.PC], 16);
@@ -53,21 +53,21 @@ function Cpu() {
 				case "AD":
 				{
 					var locale = _Memory.memory[++this.PC];
-					this.Acc = _Memory.memory[_Memory.checkLimit(locale)];
+					this.Acc = _Memory.memory[_PCB.checkLimit(_Memory.convert(locale))];
 					document.getElementById('ACC').innerHTML=this.Acc;
 					break;
 				}
 				case "8D":
 				{
 					var locale = _Memory.memory[++this.PC];
-					_Memory.memory[_Memory.checkLimit(locale)] = this.Acc.toString(16);
-					document.getElementById(_Memory.checkLimit(locale)).innerHTML=this.Acc.toString(16).toUpperCase();
+					_Memory.memory[_PCB.checkLimit(_Memory.convert(locale))] = this.Acc.toString(16);
+					document.getElementById(_PCB.checkLimit(_Memory.convert(locale))).innerHTML=this.Acc.toString(16).toUpperCase();
 					break;
 				}
 				case "6D":
 				{
 					var adder = _Memory.memory[++this.PC];
-					this.Acc = this.Acc + parseInt(_Memory.memory[_Memory.checkLimit(adder)], 16);
+					this.Acc = this.Acc + parseInt(_Memory.memory[_PCB.checkLimit(_Memory.convert(adder))], 16);
 					document.getElementById("ACC").innerHTML=this.Acc;
 					break;
 				}
@@ -80,7 +80,7 @@ function Cpu() {
 				case "AE":
 				{
 					var locale = _Memory.memory[++this.PC];
-					this.Xreg = parseInt(_Memory.memory[_Memory.checkLimit(locale)], 16);
+					this.Xreg = parseInt(_Memory.memory[_PCB.checkLimit(_Memory.convert(locale))], 16);
 					document.getElementById("X").innerHTML=this.Xreg.toString(16);
 					break;
 				}
@@ -93,7 +93,7 @@ function Cpu() {
 				case "AC":
 				{
 					var locale = _Memory.memory[++this.PC];
-					this.Yreg = parseInt(_Memory.memory[_Memory.checkLimit(locale)], 16);
+					this.Yreg = parseInt(_Memory.memory[_PCB.checkLimit(_Memory.convert(locale))], 16);
 					document.getElementById("Y").innerHTML=this.Yreg.toString(16);
 					break;
 				}
@@ -112,7 +112,7 @@ function Cpu() {
 				case "EC":
 				{
 					var locale = _Memory.memory[++this.PC];
-					if(this.Xreg != _Memory.memory[_Memory.checkLimit(locale)])
+					if(this.Xreg != _Memory.memory[_PCB.checkLimit(_Memory.convert(locale))])
 					{
 						this.Zflag = 1;
 						document.getElementById("Z").innerHTML = this.Zflag;
@@ -140,7 +140,7 @@ function Cpu() {
 				}
 				case "EE":
 				{
-					var index = _Memory.checkLimit(_Memory.memory[++this.PC])
+					var index = _PCB.checkLimit(_Memory.convert(_Memory.memory[++this.PC]))
 					incrementor = parseInt(_Memory.memory[index],16);
 					incrementor++;
 					_Memory.memory[index] = incrementor.toString(16);
@@ -156,16 +156,12 @@ function Cpu() {
 					}
 					else if(this.Xreg === 2)
 					{
-						if(_Memory.memory[this.Yreg] != 0 || _Memory.memory[this.Yreg] != "00")
+						while(_Memory.memory[this.Yreg] != "00")
 						{
 							_Console.putText(String.fromCharCode(parseInt(_Memory.memory[this.Yreg], 16)));
 							this.Yreg++;
-							this.PC--;
 						}
-						else
-						{
-							_Console.putText(" ");
-						}
+						_Console.putText(" ");
 					}
 					break;
 				}
