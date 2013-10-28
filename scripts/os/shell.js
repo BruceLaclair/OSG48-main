@@ -371,25 +371,25 @@ function shellLoad(args)
 	if(!hexValidator.test(programInput))
 	{
 		document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanHappy.jpg\" alt = \"Natsu-chan\"></label>"
-		//a _PID global that determines where in memory to place the program
-		if(_PID === 3)
+		if(_NumPrograms >= 3)
 		{
-			_StdIn.putText("Swrry memory is full");
+			_StdIn.putText("Swrry but my mammaries aren't that large...I meant memories");
+			document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanBlush.jpg\" alt = \"Natsu-chan\"></label>"
 		}
 		else
 		{
 		//Checks where to start adding the program to memory.
-			if(_PID === 0)
+			if(_NumPrograms === 0)
 			{
-				var i = 0;
+				var i = _BlockOne;
 			}
-			else if(_PID === 1)
+			else if(_NumPrograms === 1)
 			{
-				var i = 256;
+				var i = _BlockTwo;
 			}
 			else
 			{
-				var i = 512;
+				var i = _BlockThree;
 			}
 			//Go through the program being entered and add it to memory, the real memory.
 			var toBeEntered = programInput.split(" ");
@@ -401,7 +401,7 @@ function shellLoad(args)
 				j++;
 				i++;
 			}
-			_StdIn.putText("Yay you didn't make a mistake, you can call it with pid " + _PID++ + ", I hope your happy");
+			_StdIn.putText("Yay you didn't make a mistake, you can call it with pid " + _NumPrograms++ + ", I hope your happy");
 		}
 	}
 	else
@@ -417,19 +417,25 @@ function shellRun(args)
     { 
 		if(args[0] === "0")
 		{
-			_CPU.PC = 0;
+			_CPU.PC = _BlockOne;
+			_PCB = new PCB();
+			_PCB.init(0);
 			document.getElementById("PC").innerHTML=_CPU.PC;
 			_CPU.isExecuting = true;
 		}
 		else if(args[0] === "1")
 		{
-			_CPU.PC = 256;
+			_CPU.PC = _BlockTwo;
+			_PCB = new PCB();
+			_PCB.init(1);
 			document.getElementById("PC").innerHTML=_CPU.PC;
 			_CPU.isExecuting = true;
 		}
 		else if(args[0] === "2")
 		{
-				_CPU.pc = 512;
+				_CPU.pc = _BlockThree;
+				_PCB = new PCB();
+				_PCB.init(2);
 				document.getElementById("PC").innerHTML=_CPU.PC;
 				_CPU.isExecuting = true;
 		}

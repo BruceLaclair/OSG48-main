@@ -11,50 +11,17 @@ function memory(){
 	
 	
 	this.init = function() {
-		for(i = 0; i < 768; i++)
+		for(i = 0; i < _MaxMemory; i++)
 		{
 			this.memory[i] = "00";
 			document.getElementById(i).innerHTML=this.memory[i];
 		}
 	};
 	
-	this.checkLimit = function(locale) 
+	this.convert = function(locale) 
 	{
-		if (_PID === 1)
-		{
-			var limit = parseInt(locale,16);
-			if(limit >= 256)
-			{
-				krnTrapError("Hey! That's not yours to touch");
-			}
-			else
-			{
-				return limit;
-			}
-		}
-		else if (_PID === 2)
-		{
-			var limit = parseInt(locale,16);
-			if(limit >= 512)
-			{
-				krnTrapError("Hey! That's not yours to touch");
-			}
-			else
-			{
-				return limit;
-			}
-		}
-		else
-		{
-			var limit = parseInt(locale,16);
-			if(limit >= 768)
-			{
-				krnTrapError("Hey! That's not yours to touch");
-			}
-			else
-			{
-				return limit;
-			}
-		}
+			var locale = parseInt(locale,16);
+			return locale;
+		
 	}
 }
