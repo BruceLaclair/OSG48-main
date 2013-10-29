@@ -9,21 +9,11 @@
    
 function PCB(){
 	this.PID = 0;
-	this.PC    = 0;
-    this.Acc   = 0;
-    this.Xreg  = 0;
-    this.Yreg  = 0;
-    this.Zflag = 0;
 	this.base = 0;
 	this.limit = 0;
 	
 	this.init = function(ID){
 		this.PID = ID;
-		this.PC    = 0;
-        this.Acc   = 0;
-        this.Xreg  = 0;
-        this.Yreg  = 0;
-        this.Zflag = 0;
 		if(ID === 0)
 		{
 			this.base = _BlockOne;
@@ -46,7 +36,7 @@ function PCB(){
 		if((locale + this.base) > this.limit)
 		{
 			_CPU.isExecuting = false;
-			if(!_TsundereMode)
+			if(!_SarcasticMode)
 			{
 				_StdIn.putText("You know you really shouldn't touch things that don't belong to you");
 			}
@@ -59,11 +49,5 @@ function PCB(){
 		{
 			return (locale + this.base);
 		}
-	};
-	this.toString = function ()
-	{
-		var toBeReturned = "";
-		toBeReturned = "PID: " + this.PID + " PC: " + this.PC + " X reg: " + this.Xreg + " Y reg: " + this.Yreg;
-		return toBeReturned;
 	}
 }

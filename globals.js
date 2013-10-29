@@ -27,12 +27,9 @@ var KEYBOARD_IRQ = 1;
 var _CPU = null;
 var _Memory = null;
 var _NumPrograms = 0; //Number of inputed programs so far
-var _Quantum = 6;
 
 //Setting up all of the possible control blocks
-var _PCB0 = null;
-var _PCB1 = null;
-var _PCB2 = null;
+var _PCB = null;
 /*
 *	To be used later
 *	var _PCB3 = null;
@@ -62,8 +59,6 @@ var _Trace = true;
 var _KernelInterruptQueue = null;
 var _KernelBuffers = null;
 var _KernelInputQueue = null;
-var _ReadyQueue = null;
-var _ResidentList = null;
 
 // Standard input and output
 var _StdIn  = null;
@@ -74,7 +69,7 @@ var _Console = null;
 var _OsShell = null;
 
 // At least this OS is not trying to kill you. (Yet.)
-var _TsundereMode = false;
+var _SarcasticMode = false;
 
 // Global Device Driver Objects - page 12
 var krnKeyboardDriver = null;
