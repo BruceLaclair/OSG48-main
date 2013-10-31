@@ -18,7 +18,9 @@ var CPU_CLOCK_INTERVAL = 100;   // This is in ms, or milliseconds, so 1000 = 1 s
 
 var TIMER_IRQ = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
                     // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
-var KEYBOARD_IRQ = 1;  
+var KEYBOARD_IRQ = 1; 
+
+var CONTEXTSWITCH_IRQ = 2;
 
 
 //
@@ -30,6 +32,9 @@ var _NumPrograms = 0; //Number of inputed programs so far
 
 //Setting up all of the possible control blocks
 var _PCB = null;
+var _PCB1 = null;
+var _PCB2 = null;
+var _PCB3 = null;
 /*
 *	To be used later
 *	var _PCB3 = null;
@@ -41,6 +46,7 @@ var _BlockSize = 255;
 var _BlockOne = 0;
 var _BlockTwo = 256;
 var _BlockThree = 512;
+var _Quantum = 6;
 
 var _OSclock = 0;       // Page 23.
 
@@ -59,6 +65,7 @@ var _Trace = true;
 var _KernelInterruptQueue = null;
 var _KernelBuffers = null;
 var _KernelInputQueue = null;
+var _ReadyQueue = null;
 
 // Standard input and output
 var _StdIn  = null;
@@ -69,7 +76,7 @@ var _Console = null;
 var _OsShell = null;
 
 // At least this OS is not trying to kill you. (Yet.)
-var _SarcasticMode = false;
+var _TsundereMode = false;
 
 // Global Device Driver Objects - page 12
 var krnKeyboardDriver = null;
