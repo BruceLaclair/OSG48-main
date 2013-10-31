@@ -424,7 +424,7 @@ function shellRun(args)
 		if(args[0] === "0")
 		{
 			_CPU.PC = _BlockOne;
-			_ReadyQueue.enqueue(_PCB1);
+			_CPU.Scheduler(_PCB1);
 			document.getElementById("PC").innerHTML=_CPU.PC;
 			document.getElementById("RQ1").innerHTML=_PCB1.toString();
 			_CPU.isExecuting = true;
@@ -432,7 +432,7 @@ function shellRun(args)
 		else if(args[0] === "1")
 		{
 			_CPU.PC = _BlockTwo;
-			_ReadyQueue.enqueue(_PCB2);
+			_CPU.Scheduler(_PCB2);
 			document.getElementById("PC").innerHTML=_CPU.PC;
 			document.getElementById("RQ2").innerHTML=_PCB2.toString();
 			_CPU.isExecuting = true;
@@ -440,7 +440,7 @@ function shellRun(args)
 		else if(args[0] === "2")
 		{
 				_CPU.pc = _BlockThree;
-				_ReadyQueue.enqueue(_PCB3);
+				_CPU.Scheduler(_PCB3);
 				document.getElementById("PC").innerHTML=_CPU.PC;
 				document.getElementById("RQ3").innerHTML=_PCB3.toString();
 				_CPU.isExecuting = true;

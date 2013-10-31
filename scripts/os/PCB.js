@@ -16,6 +16,7 @@ function PCB(){
 	this.YRegVal = 0;
 	this.ZFlagVal = 0;
 	this.ACCVal = 0;
+	this.isDone = false;
 	
 	this.init = function(ID){
 		this.PID = ID;
@@ -24,6 +25,7 @@ function PCB(){
 		this.YRegVal = 0;
 		this.ZFlagVal = 0;
 		this.ACCVal = 0;
+		this.isDone = false;
 		if(ID === 0)
 		{
 			this.base = _BlockOne;
@@ -34,7 +36,7 @@ function PCB(){
 			this.base = _BlockTwo;
 			this.limit = _BlockTwo+_BlockSize;
 		}
-		else if (ID === 2)
+		else
 		{
 			this.base = _BlockThree;
 			this.limit = _BlockThree+_BlockSize;

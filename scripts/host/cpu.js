@@ -20,7 +20,7 @@ function Cpu() {
         this.Yreg  = 0;
         this.Zflag = 0;      
         this.isExecuting = false;  
-		this.QuantumTicks = 1;
+		this.QuantumTicks = 0;
     
     this.init = function() {
 		this.PC    = 0;     // Program Counter
@@ -52,8 +52,8 @@ function Cpu() {
 				{
 					this.Acc = parseInt(_Memory.memory[++this.PC], 16);
 					document.getElementById('ACC').innerHTML=this.Acc;
-					_PCB.ACCVal = this.Acc;
 					_PCB.PCLoc = this.PC;
+					_PCB.ACCVal = this.Acc;
 					break;
 				}
 				case "AD":
@@ -61,8 +61,8 @@ function Cpu() {
 					var locale = _Memory.memory[++this.PC];
 					this.Acc = _Memory.memory[_PCB.checkLimit(_Memory.convert(locale))];
 					document.getElementById('ACC').innerHTML=this.Acc;
-					_PCB.ACCVal = this.Acc;
 					_PCB.PCLoc = this.PC;
+					_PCB.ACCVal = this.Acc;
 					break;
 				}
 				case "8D":
@@ -78,16 +78,16 @@ function Cpu() {
 					var adder = _Memory.memory[++this.PC];
 					this.Acc = this.Acc + parseInt(_Memory.memory[_PCB.checkLimit(_Memory.convert(adder))], 16);
 					document.getElementById("ACC").innerHTML=this.Acc;
-					_PCB.ACCVal = this.Acc;
 					_PCB.PCLoc = this.PC;
+					_PCB.ACCVal = this.Acc;
 					break;
 				}
 				case "A2":
 				{
 					this.Xreg = parseInt(_Memory.memory[++this.PC],16);
 					document.getElementById("X").innerHTML=this.Xreg.toString(16);
-					_PCB.XVal = this.Xreg;
 					_PCB.PCLoc = this.PC;
+					_PCB.XRegVal = this.Xreg;
 					break;
 				}
 				case "AE":
@@ -95,16 +95,16 @@ function Cpu() {
 					var locale = _Memory.memory[++this.PC];
 					this.Xreg = parseInt(_Memory.memory[_PCB.checkLimit(_Memory.convert(locale))], 16);
 					document.getElementById("X").innerHTML=this.Xreg.toString(16);
-					_PCB.XVal = this.Xreg;
 					_PCB.PCLoc = this.PC;
+					_PCB.XRegVal = this.Xreg;
 					break;
 				}
 				case "A0":
 				{
 					this.Yreg = parseInt(_Memory.memory[++this.PC],16);
 					document.getElementById("Y").innerHTML=this.Yreg.toString(16);
-					_PCB.YVal = this.Yreg;
 					_PCB.PCLoc = this.PC;
+					_PCB.YRegVal = this.Yreg;
 					break;
 				}
 				case "AC":
@@ -112,8 +112,8 @@ function Cpu() {
 					var locale = _Memory.memory[++this.PC];
 					this.Yreg = parseInt(_Memory.memory[_PCB.checkLimit(_Memory.convert(locale))], 16);
 					document.getElementById("Y").innerHTML=this.Yreg.toString(16);
-					_PCB.YVal = this.Yreg;
 					_PCB.PCLoc = this.PC;
+					_PCB.YRegVal = this.Yreg;
 					break;
 				}
 				case "EA":
@@ -124,7 +124,16 @@ function Cpu() {
 				{
 					if(_Memory.memory[this.PC + 1] === "00")
 					{
-						this.isExecuting = false;
+						if(_ReadyQueue.isEmpty())
+						{
+							_PCB.isDone = true;
+							this.isExecuting = false;
+						}
+						else
+						{
+							_PCB.isDone = true;
+							_KernelInterruptQueue.enqueue( new Interrupt(CONTEXTSWITCH_IRQ, 0) );
+						}
 					}
 					break;
 				}
@@ -153,12 +162,13 @@ function Cpu() {
 						var offset = _Memory.memory[++this.PC];
 						offset = parseInt(offset,16);
 						this.PC = ((this.PC + offset) % 256);
+						_PCB.PCLoc = this.PC;
 					}
 					else
 					{
 						this.PC++;
+						_PCB.PCLoc = this.PC;
 					}
-					_PCB.PCLoc = this.PC;
 					break;
 				}
 				case "EE":
@@ -180,21 +190,22 @@ function Cpu() {
 					}
 					else if(this.Xreg === 2)
 					{
-						while(_Memory.memory[this.Yreg] != "00")
+						var tempY = this.Yreg;
+						_PCB.YRegVal = this.Yreg;
+						while(_Memory.memory[tempY] != "00")
 						{
-							_Console.putText(String.fromCharCode(parseInt(_Memory.memory[this.Yreg], 16)));
-							this.Yreg++;
+							_Console.putText(String.fromCharCode(parseInt(_Memory.memory[tempY], 16)));
+							tempY++;
 						}
 						_Console.putText(" ");
 					}
-					_PCB.PCLoc = this.PC;
 					break;
 				}
 				default:
 				{
 					this.PC++;
-					document.getElementById('PC').innerHTML=this.PC;
 					_PCB.PCLoc = this.PC;
+					document.getElementById('PC').innerHTML=this.PC;
 				}
 			}
 			this.PC++;
@@ -205,29 +216,41 @@ function Cpu() {
 	
 	this.CPUScheduler = function()
 	{
-		if(this.QuantumTicks > _Quantum)
+		if(this.QuantumTicks >= _Quantum)
 		{
 			_KernelInterruptQueue.enqueue( new Interrupt(CONTEXTSWITCH_IRQ, 0) );
 		}
 		this.QuantumTicks++;
-	}
+	};
+	
+	this.Scheduler = function(program)
+	{
+		_ReadyQueue.enqueue(program);
+		if(!this.isExecuting)
+		{
+			_PCB = _ReadyQueue.dequeue();
+		}
+	};
 	
 	this.ContextSwitch = function()
 	{
 		var temp = _PCB;
+		_PCB.PCLoc = this.PC;
+		_PCB.ACCVal = this.Acc;
+		_PCB.XRegVal = this.Xreg;
+		_PCB.YRegVal = this.Yreg;
+		_PCB.ZFlagVal = this.Zflag;
+		
 		_PCB = _ReadyQueue.dequeue();
-		if(_PCB === temp)
-		{
+		if(!_PCB.isDone)
+		{ 
 			_ReadyQueue.enqueue(temp);
-			this.QuantumTicks = 0;
 		}
-		else
-		{
-			_ReadyQueue.enqueue(temp);
-			document.getElementById('RQ1').innerHTML=_PCB.toString();
-			document.getElementById('RQ2').innerHTML=temp.toString();
-			this.QuantumTicks = 0;
-		}
-		this.PC = _PCB.PCLoc;
-	}
+		this.PC    = _PCB.PCLoc;
+		this.Acc   = _PCB.ACCVal;
+		this.Xreg  = _PCB.XRegVal;
+		this.Yreg  = _PCB.YRegVal;
+		this.Zflag = _PCB.ZFlagVal;
+		this.QuantumTicks = 0;		
+	};
 }

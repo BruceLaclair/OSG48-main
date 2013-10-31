@@ -46,7 +46,7 @@ var _BlockSize = 255;
 var _BlockOne = 0;
 var _BlockTwo = 256;
 var _BlockThree = 512;
-var _Quantum = 6;
+var _Quantum = 1000000;
 
 var _OSclock = 0;       // Page 23.
 
