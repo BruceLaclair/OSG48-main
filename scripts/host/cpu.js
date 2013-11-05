@@ -20,7 +20,7 @@ function Cpu() {
         this.Yreg  = 0;
         this.Zflag = 0;      
         this.isExecuting = false;  
-		this.QuantumTicks = 0;
+		this.QuantumTicks = _Quantum;
 		this.tickSenseValidOpCode = 0;
     
     this.init = function() {

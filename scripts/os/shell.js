@@ -458,7 +458,21 @@ function shellRun(args)
 			_CPU.PC = _BlockOne;
 			_CPU.Scheduler(_PCB1);
 			document.getElementById("PC").innerHTML=_CPU.PC;
-			document.getElementById("RQ1").innerHTML=_PCB1.toString();
+			if(_NumTimesRan === 0)
+			{
+				document.getElementById("RQ1").innerHTML=_PCB1.toString();
+				_NumTimesRan++;
+			}
+			else if(_NumTimesRan === 1)
+			{
+				document.getElementById("RQ2").innerHTML=_PCB1.toString();
+				_NumTimesRan++;
+			}
+			else if(_NumTimesRan === 2)
+			{
+				document.getElementById("RQ3").innerHTML=_PCB1.toString();
+				_NumTimesRan = 0;
+			}
 			_CPU.isExecuting = true;
 		}
 		else if(args[0] === "1")
@@ -466,7 +480,21 @@ function shellRun(args)
 			_CPU.PC = _BlockTwo;
 			_CPU.Scheduler(_PCB2);
 			document.getElementById("PC").innerHTML=_CPU.PC;
-			document.getElementById("RQ2").innerHTML=_PCB2.toString();
+			if(_NumTimesRan === 0)
+			{
+				document.getElementById("RQ1").innerHTML=_PCB2.toString();
+				_NumTimesRan++;
+			}
+			else if(_NumTimesRan === 1)
+			{
+				document.getElementById("RQ2").innerHTML=_PCB2.toString();
+				_NumTimesRan++;
+			}
+			else if(_NumTimesRan === 2)
+			{
+				document.getElementById("RQ3").innerHTML=_PCB2.toString();
+				_NumTimesRan = 0;
+			}
 			_CPU.isExecuting = true;
 		}
 		else if(args[0] === "2")
@@ -474,7 +502,21 @@ function shellRun(args)
 				_CPU.pc = _BlockThree;
 				_CPU.Scheduler(_PCB3);
 				document.getElementById("PC").innerHTML=_CPU.PC;
+			if(_NumTimesRan === 0)
+			{
+				document.getElementById("RQ1").innerHTML=_PCB3.toString();
+				_NumTimesRan++;
+			}
+			else if(_NumTimesRan === 1)
+			{
+				document.getElementById("RQ2").innerHTML=_PCB3.toString();
+				_NumTimesRan++;
+			}
+			else if(this.numTimesRan === 2)
+			{
 				document.getElementById("RQ3").innerHTML=_PCB3.toString();
+				_NumTimesRan = 0;
+			}
 				_CPU.isExecuting = true;
 		}
 		else
