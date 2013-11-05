@@ -83,8 +83,22 @@ function shellInit() {
 	// run <int>
 	sc = new ShellCommand();
 	sc.command = "run";
-	sc.description = "- If you type this command I will start executing the program at the specified pid on the next cycle";
+	sc.description = "- If you type this command I will start executing the program at the specified pid";
 	sc.function = shellRun;
+	this.commandList[this.commandList.length] = sc;
+
+	// runall
+	sc = new ShellCommand();
+	sc.command = "runall";
+	sc.description = "- runs all da programs in memory"
+	sc.function = shellRunAll;
+	this.commandList[this.commandList.length] = sc;
+	
+	// quantum <int>
+	sc = new ShellCommand();
+	sc.command = "quantum";
+	sc.description = "- Sets the quantum make sure you know what this word means before you use it";
+	sc.function = shellQuantum;
 	this.commandList[this.commandList.length] = sc;
 	
     // shutdown
@@ -137,7 +151,18 @@ function shellInit() {
     this.commandList[this.commandList.length] = sc;
 
     // processes - list the running processes and their IDs
+	sc = new ShellCommand();
+    sc.command = "processes";
+    sc.description = "- displays a list of all running processes";
+    sc.function = shellProcesses;
+    this.commandList[this.commandList.length] = sc;
+	
     // kill <id> - kills the specified process id.
+	sc = new ShellCommand();
+    sc.command = "kill";
+    sc.description = "- if you type this command I will slaughter the given PID, with joy and happiness";
+    sc.function = shellKill;
+    this.commandList[this.commandList.length] = sc;
 
     //
     // Display the initial prompt.
@@ -384,18 +409,24 @@ function shellLoad(args)
 				var i = _BlockOne;
 				_PCB1 = new PCB;
 				_PCB1.init(_NumPrograms);
+				document.getElementById("RL1").innerHTML=_PCB1.toString();
+				_ResidentList.push(_PCB1.toString());
 			}
 			else if(_NumPrograms === 1)
 			{
 				var i = _BlockTwo;
 				_PCB2 = new PCB;
 				_PCB2.init(_NumPrograms);
+				document.getElementById("RL2").innerHTML=_PCB2.toString();
+				_ResidentList.push(_PCB2.toString());
 			}
 			else
 			{
 				var i = _BlockThree;
 				_PCB3 = new PCB;
 				_PCB3.init(_NumPrograms);
+				document.getElementById("RL3").innerHTML=_PCB3.toString();
+				_ResidentList.push(_PCB3.toString());
 			}
 			//Go through the program being entered and add it to memory, the real memory.
 			var toBeEntered = programInput.split(" ");
@@ -407,7 +438,8 @@ function shellLoad(args)
 				j++;
 				i++;
 			}
-			_StdIn.putText("Yay you didn't make a mistake, you can call it with pid " + _NumPrograms++ + ", I hope your happy");
+			_StdIn.putText("I assigned it PID: " + _NumPrograms++ + ", but...it's not like I did it for you or anything...");
+			document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanBlush.jpg\" alt = \"Natsu-chan\"></label>"
 		}
 	}
 	else
@@ -470,6 +502,25 @@ function shellRun(args)
 	}
 }
 
+function shellRunAll(args)
+{
+	_CPU.PC = _BlockOne;
+	_CPU.Scheduler(_PCB1);
+	_CPU.isExecuting = true;
+	document.getElementById("PC").innerHTML=_CPU.PC;
+	document.getElementById("RQ1").innerHTML=_PCB1.toString();
+	if(_PCB2 != null)
+	{
+		_CPU.Scheduler(_PCB2);
+		document.getElementById("RQ2").innerHTML=_PCB2.toString();
+	}
+	if(_PCB3 != null)
+	{
+		_CPU.Scheduler(_PCB3);
+		document.getElementById("RQ3").innerHTML=_PCB3.toString();
+	}
+};
+
 function shellStatus(args)
 {
 	var status = "";
@@ -483,6 +534,25 @@ function shellStatus(args)
 		}
 	}
 	document.getElementById('pstatusUpdate').innerHTML=status;
+}
+
+function shellQuantum(args)
+{
+	if (args.length > 0)
+	{
+		_Quantum = args[0];
+	}
+	else
+	{
+		if (!_TsundereMode)
+			{
+			_StdIn.putText("What did you want me to set it to again?");
+			}
+		else
+			{
+				_StdIn.putText("I told you not to touch this if you didn't know what it means, what am I supposed to set it to.");
+			}
+	}
 }
 
 
@@ -590,4 +660,90 @@ function shellPrompt(args)
     {
         _StdIn.putText("Usage: prompt <string>  Please supply a string.");
     }
+}
+
+function shellProcesses(args)
+{
+	if(!_CPU.isExecuting)
+	{
+		if (!_TsundereMode)
+			{
+				_StdIn.putText("There is nothing currently running");
+			}
+		else
+			{
+				_StdIn.putText("...Words cannot describe...your stupidity...Please never talk to me again.");
+			}
+	}
+	else
+	{
+		if(!_PCB1.isDone)
+		{
+			_StdIn.putText(_PCB1.toString());
+			_StdIn.advanceLine();
+		}
+		if(!_PCB2.isDone)
+		{
+			_StdIn.putText(_PCB2.toString());
+			_StdIn.advanceLine();
+		}
+		if(!_PCB3.isDone)
+		{
+			_StdIn.putText(_PCB3.toString());
+			_StdIn.advanceLine();
+		}
+	}
+}
+
+function shellKill(args)
+{
+
+	if(!_CPU.isExecuting)
+	{
+		if (!_TsundereMode)
+			{
+				_StdIn.putText("There is nothing currently running");
+			}
+		else
+			{
+				_StdIn.putText("...Words cannot describe...your stupidity...Please never talk to me again.");
+			}
+	}
+	else if (args.length > 0)
+	{
+		if(args[0] === "0")
+		{
+			_PCB1.isDone = true;
+		}
+		else if(args[0] === "1")
+		{
+			_PCB2.isDone = true;
+		}
+		else if(args[0] === "2")
+		{
+			_PCB3.isDone = true;
+		}
+		else
+		{
+			if (!_TsundereMode)
+			{
+			_StdIn.putText("Sorry I can't kill what doesn't exsist.");
+			}
+		else
+			{
+				_StdIn.putText("Stupidity like yours does not belong in this world, prepare to die.");
+			}
+		}
+	}
+	else
+	{
+		if (!_TsundereMode)
+			{
+			_StdIn.putText("What did you want me to kill?");
+			}
+		else
+			{
+				_StdIn.putText("Kill what?  I guess you really do have a death wish...well if you insist.");
+			}
+	}
 }

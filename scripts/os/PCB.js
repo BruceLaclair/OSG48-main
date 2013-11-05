@@ -48,7 +48,7 @@ function PCB(){
 	{
 		if((locale + this.base) > this.limit)
 		{
-			_CPU.isExecuting = false;
+			_OSShell.shellKill(this.PID);
 			if(!_TsundereMode)
 			{
 				_StdIn.putText("You know you really shouldn't touch things that don't belong to you");

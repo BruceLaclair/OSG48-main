@@ -67,6 +67,10 @@ var _KernelBuffers = null;
 var _KernelInputQueue = null;
 var _ReadyQueue = null;
 
+// OS List
+
+var _ResidentList = new Array();
+
 // Standard input and output
 var _StdIn  = null;
 var _StdOut = null;
