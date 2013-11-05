@@ -22,6 +22,8 @@ var KEYBOARD_IRQ = 1;
 
 var CONTEXTSWITCH_IRQ = 2;
 
+var INVALID_OPCODE_IRQ = 3;
+
 
 //
 // Global Variables
