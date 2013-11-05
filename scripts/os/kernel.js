@@ -133,6 +133,8 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 		case CONTEXTSWITCH_IRQ:
 			_CPU.ContextSwitch();
 			break;
+		case INVALID_OPCODE_IRQ:
+			_CPU.InvalidOpCode();
         default: 
             krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
     }

@@ -40,10 +40,10 @@ function hostInit()
    //start the clock for the status bar
    startTime();
    // Check for our testing and enrichment core.
-   /*if (typeof Glados === "function") {
+   if (typeof Glados === "function") {
       _GLaDOS = new Glados();
       _GLaDOS.init();
-   };*/
+   };
 
 }
 
@@ -117,4 +117,9 @@ function hostBtnReset_click(btn)
     // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
     // be reloaded from the server. If it is false or not specified, the browser may reload the 
     // page from its cache, which is not what we want.
+}
+
+function updateHostOS(where, what)
+{
+	document.getElementById(where).innerHTML=what;
 }
