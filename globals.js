@@ -46,7 +46,7 @@ var _BlockSize = 255;
 var _BlockOne = 0;
 var _BlockTwo = 256;
 var _BlockThree = 512;
-var _Quantum = 1000000;
+var _Quantum = 6;
 
 var _OSclock = 0;       // Page 23.
 
@@ -66,6 +66,10 @@ var _KernelInterruptQueue = null;
 var _KernelBuffers = null;
 var _KernelInputQueue = null;
 var _ReadyQueue = null;
+
+// OS List
+
+var _ResidentList = new Array();
 
 // Standard input and output
 var _StdIn  = null;

@@ -40,10 +40,10 @@ function hostInit()
    //start the clock for the status bar
    startTime();
    // Check for our testing and enrichment core.
-   if (typeof Glados === "function") {
+   /*if (typeof Glados === "function") {
       _GLaDOS = new Glados();
       _GLaDOS.init();
-   };
+   };*/
 
 }
 
