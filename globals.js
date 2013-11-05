@@ -42,6 +42,11 @@ var _PCB3 = null;
 *	var _PCB3 = null;
 */
 
+//Silly things to make things work and stuff...
+
+var _NumTimesRan = 0;
+
+
 //GLOBAL LIMITZ
 var _MaxMemory = 768;
 var _BlockSize = 255;
