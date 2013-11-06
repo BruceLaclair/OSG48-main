@@ -456,8 +456,12 @@ function shellRun(args)
 		if(args[0] === "0")
 		{
 			_CPU.PC = _BlockOne;
-			_CPU.Scheduler(_PCB1);
+			_PCB1.isDone = false;
 			document.getElementById("PC").innerHTML=_CPU.PC;
+			if(_ReadyQueue.isEmpty())
+			{
+				_NumTimesRan = 0;
+			}
 			if(_NumTimesRan === 0)
 			{
 				document.getElementById("RQ1").innerHTML=_PCB1.toString();
@@ -473,12 +477,14 @@ function shellRun(args)
 				document.getElementById("RQ3").innerHTML=_PCB1.toString();
 				_NumTimesRan = 0;
 			}
+			_CPU.Scheduler(_PCB1);
 			_CPU.isExecuting = true;
 		}
 		else if(args[0] === "1")
 		{
 			_CPU.PC = _BlockTwo;
 			_CPU.Scheduler(_PCB2);
+			_PCB2.isDone = false;
 			document.getElementById("PC").innerHTML=_CPU.PC;
 			if(_NumTimesRan === 0)
 			{
@@ -501,6 +507,7 @@ function shellRun(args)
 		{
 				_CPU.pc = _BlockThree;
 				_CPU.Scheduler(_PCB3);
+				_PCB3.isDone = false;
 				document.getElementById("PC").innerHTML=_CPU.PC;
 			if(_NumTimesRan === 0)
 			{
@@ -548,17 +555,20 @@ function shellRunAll(args)
 {
 	_CPU.PC = _BlockOne;
 	_CPU.Scheduler(_PCB1);
+	_PCB1.isDone = false;
 	_CPU.isExecuting = true;
 	document.getElementById("PC").innerHTML=_CPU.PC;
 	document.getElementById("RQ1").innerHTML=_PCB1.toString();
 	if(_PCB2 != null)
 	{
 		_CPU.Scheduler(_PCB2);
+		_PCB2.isDone = false;
 		document.getElementById("RQ2").innerHTML=_PCB2.toString();
 	}
 	if(_PCB3 != null)
 	{
 		_CPU.Scheduler(_PCB3);
+		_PCB3.isDone = false;
 		document.getElementById("RQ3").innerHTML=_PCB3.toString();
 	}
 };

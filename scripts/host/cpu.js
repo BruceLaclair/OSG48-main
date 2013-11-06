@@ -53,8 +53,6 @@ function Cpu() {
 				{
 					this.Acc = parseInt(_Memory.memory[++this.PC + _PCB.base], 16);
 					document.getElementById('ACC').innerHTML=this.Acc;
-					_PCB.PCLoc = this.PC;
-					_PCB.ACCVal = this.Acc;
 					this.tickSenseValidOpCode = 0;
 					break;
 				}
@@ -63,8 +61,6 @@ function Cpu() {
 					var locale = _Memory.memory[++this.PC + _PCB.base];
 					this.Acc = _Memory.memory[_PCB.checkLimit(_Memory.convert(locale))];
 					document.getElementById('ACC').innerHTML=this.Acc;
-					_PCB.PCLoc = this.PC;
-					_PCB.ACCVal = this.Acc;
 					this.tickSenseValidOpCode = 0;
 					break;
 				}
@@ -73,7 +69,6 @@ function Cpu() {
 					var locale = _Memory.memory[++this.PC + _PCB.base];
 					_Memory.memory[_PCB.checkLimit(_Memory.convert(locale))] = this.Acc.toString(16);
 					document.getElementById(_PCB.checkLimit(_Memory.convert(locale))).innerHTML=this.Acc.toString(16).toUpperCase();
-					_PCB.PCLoc = this.PC;
 					this.tickSenseValidOpCode = 0;
 					break;
 				}
@@ -82,8 +77,6 @@ function Cpu() {
 					var adder = _Memory.memory[++this.PC + _PCB.base];
 					this.Acc = this.Acc + parseInt(_Memory.memory[_PCB.checkLimit(_Memory.convert(adder))], 16);
 					document.getElementById("ACC").innerHTML=this.Acc;
-					_PCB.PCLoc = this.PC;
-					_PCB.ACCVal = this.Acc;
 					this.tickSenseValidOpCode = 0;
 					break;
 				}
@@ -91,8 +84,6 @@ function Cpu() {
 				{
 					this.Xreg = parseInt(_Memory.memory[++this.PC + _PCB.base],16);
 					document.getElementById("X").innerHTML=this.Xreg.toString(16);
-					_PCB.PCLoc = this.PC;
-					_PCB.XRegVal = this.Xreg;
 					this.tickSenseValidOpCode = 0;
 					break;
 				}
@@ -101,8 +92,6 @@ function Cpu() {
 					var locale = _Memory.memory[++this.PC + _PCB.base];
 					this.Xreg = parseInt(_Memory.memory[_PCB.checkLimit(_Memory.convert(locale))], 16);
 					document.getElementById("X").innerHTML=this.Xreg.toString(16);
-					_PCB.PCLoc = this.PC;
-					_PCB.XRegVal = this.Xreg;
 					this.tickSenseValidOpCode = 0;
 					break;
 				}
@@ -110,8 +99,6 @@ function Cpu() {
 				{
 					this.Yreg = parseInt(_Memory.memory[++this.PC + _PCB.base],16);
 					document.getElementById("Y").innerHTML=this.Yreg.toString(16);
-					_PCB.PCLoc = this.PC;
-					_PCB.YRegVal = this.Yreg;
 					this.tickSenseValidOpCode = 0;
 					break;
 				}
@@ -120,8 +107,6 @@ function Cpu() {
 					var locale = _Memory.memory[++this.PC + _PCB.base];
 					this.Yreg = parseInt(_Memory.memory[_PCB.checkLimit(_Memory.convert(locale))], 16);
 					document.getElementById("Y").innerHTML=this.Yreg.toString(16);
-					_PCB.PCLoc = this.PC;
-					_PCB.YRegVal = this.Yreg;
 					this.tickSenseValidOpCode = 0;
 					break;
 				}
@@ -137,11 +122,27 @@ function Cpu() {
 						if(_ReadyQueue.isEmpty())
 						{
 							_PCB.isDone = true;
+							_PCB.ACCVal = 0;
+							_PCB.XRegVal = 0;
+							_PCB.YRegVal = 0;
+							_PCB.ZFlagVal = 0;
+							this.Acc   = 0;
+							this.Xreg  = 0;
+							this.Yreg  = 0;
+							this.Zflag = 0;
 							this.isExecuting = false;
 						}
 						else
 						{
 							_PCB.isDone = true;
+							_PCB.ACCVal = 0;
+							_PCB.XRegVal = 0;
+							_PCB.YRegVal = 0;
+							_PCB.ZFlagVal = 0;
+							this.Acc   = 0;
+							this.Xreg  = 0;
+							this.Yreg  = 0;
+							this.Zflag = 0;
 							_KernelInterruptQueue.enqueue( new Interrupt(CONTEXTSWITCH_IRQ, 0) );
 						}
 					}
@@ -163,7 +164,6 @@ function Cpu() {
 						_PCB.ZFlagVal = 0;
 						document.getElementById("Z").innerHTML = this.Zflag;
 					}
-					_PCB.PCLoc = this.PC;
 					this.tickSenseValidOpCode = 0;
 					break;
 				}
@@ -174,12 +174,10 @@ function Cpu() {
 						var offset = _Memory.memory[++this.PC + _PCB.base];
 						offset = parseInt(offset,16);
 						this.PC = ((this.PC + _PCB.base + offset) % (_BlockSize + 1));
-						_PCB.PCLoc = this.PC;
 					}
 					else
 					{
 						this.PC++;
-						_PCB.PCLoc = this.PC;
 					}
 					this.tickSenseValidOpCode = 0;
 					break;
@@ -191,7 +189,6 @@ function Cpu() {
 					incrementor++;
 					_Memory.memory[index] = incrementor.toString(16);
 					document.getElementById(index).innerHTML = incrementor.toString(16);
-					_PCB.PCLoc = this.PC;
 					this.tickSenseValidOpCode = 0;
 					break;
 				}
@@ -228,14 +225,12 @@ function Cpu() {
 					else
 					{
 						this.PC++;
-						_PCB.PCLoc = this.PC;
 						document.getElementById('PC').innerHTML=this.PC;
 						this.tickSenseValidOpCode++;
 					}
 				}
 			}
 			this.PC++;
-			_PCB.PCLoc = this.PC;
 			document.getElementById('PC').innerHTML=this.PC + _PCB.base;
 		}
     };
@@ -275,6 +270,11 @@ function Cpu() {
 		if(_ReadyQueue.isEmpty())
 		{
 			this.isExecuting = false;
+			this.PC    = 0;
+			this.Acc   = 0;
+			this.Xreg  = 0;
+			this.Yreg  = 0;
+			this.Zflag = 0;
 		}
 		
 		_PCB = _ReadyQueue.dequeue();
