@@ -45,6 +45,10 @@ function Cpu() {
 		if(this.isExecuting)
 		{
 			this.CPUScheduler();
+			if((this.PC + _PCB.base) > _PCB.limit)
+			{
+				_KernelInterruptQueue.enqueue( new Interrupt( DONT_TOUCH_ME_THERE_IRQ) );
+			}
 			var op = _Memory.memory[this.PC + _PCB.base];
 			switch(op)
 			{
@@ -121,11 +125,9 @@ function Cpu() {
 					{
 						if(_ReadyQueue.isEmpty())
 						{
+							_PCB.reset();
 							_PCB.isDone = true;
-							_PCB.ACCVal = 0;
-							_PCB.XRegVal = 0;
-							_PCB.YRegVal = 0;
-							_PCB.ZFlagVal = 0;
+							this.PC = 0;
 							this.Acc   = 0;
 							this.Xreg  = 0;
 							this.Yreg  = 0;
@@ -134,11 +136,9 @@ function Cpu() {
 						}
 						else
 						{
+							_PCB.reset();
 							_PCB.isDone = true;
-							_PCB.ACCVal = 0;
-							_PCB.XRegVal = 0;
-							_PCB.YRegVal = 0;
-							_PCB.ZFlagVal = 0;
+							this.PC = 0;
 							this.Acc   = 0;
 							this.Xreg  = 0;
 							this.Yreg  = 0;
@@ -275,6 +275,7 @@ function Cpu() {
 			this.Xreg  = 0;
 			this.Yreg  = 0;
 			this.Zflag = 0;
+			_PCB.reset();
 		}
 		
 		_PCB = _ReadyQueue.dequeue();
