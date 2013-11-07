@@ -135,6 +135,10 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 			break;
 		case INVALID_OPCODE_IRQ:
 			_CPU.InvalidOpCode();
+			break;
+		case DONT_TOUCH_ME_THERE_IRQ:
+			_PCB.MemoryOutOfBoundsError();
+			break;	
         default: 
             krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
     }

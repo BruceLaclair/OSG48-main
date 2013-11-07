@@ -39,24 +39,16 @@ function PCB(){
 		else
 		{
 			this.base = _BlockThree;
-			this.limit = _BlockThree+_BlockSize;
+			this.limit = _BlockThree + _BlockSize;
 		}
 		
 	};
 	
 	this.checkLimit = function(locale)
 	{
-		if((locale + this.base) > this.limit)
+		if((locale + this.base) >= this.limit)
 		{
-			_OSShell.shellKill(this.PID);
-			if(!_TsundereMode)
-			{
-				_StdIn.putText("You know you really shouldn't touch things that don't belong to you");
-			}
-			else
-			{
-				_StdIn.putText("Your lucky I am not revoking your access insolent fool");
-			}
+			_KernelInterruptQueue.enqueue( new Interrupt( DONT_TOUCH_ME_THERE_IRQ) );
 		}
 		else
 		{
@@ -69,5 +61,28 @@ function PCB(){
 		var toBeReturned = "";
 		toBeReturned = " PID: " + this.PID + " PC " + this.PCLoc + " ACC " + this.ACCVal + " Base: " + this.base + " Limit: " + this.limit + " X value: " + this.XRegVal + " Y value: " + this.YRegVal + " Zero: " + this.ZFlagVal;
 		return toBeReturned;
-	}
+	};
+	
+	this.reset = function()
+	{
+		this.PCLoc = 0;
+		this.XRegVal = 0;
+		this.YRegVal = 0;
+		this.ZFlagVal = 0;
+		this.ACCVal = 0;
+		this.isDone = false;
+	};
+	
+	this.MemoryOutOfBoundsError = function()
+	{
+			shellKill(this.PID.toString());
+			if(!_TsundereMode)
+			{
+				_StdIn.putText("You know you really shouldn't touch things that don't belong to you");
+			}
+			else
+			{
+				_StdIn.putText("Your lucky I am not revoking your access insolent fool");
+			}
+	};
 }

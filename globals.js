@@ -24,6 +24,8 @@ var CONTEXTSWITCH_IRQ = 2;
 
 var INVALID_OPCODE_IRQ = 3;
 
+var DONT_TOUCH_ME_THERE_IRQ = 4;
+
 
 //
 // Global Variables
@@ -41,10 +43,6 @@ var _PCB3 = null;
 *	To be used later
 *	var _PCB3 = null;
 */
-
-//Silly things to make things work and stuff...
-
-var _NumTimesRan = 0;
 
 
 //GLOBAL LIMITZ
