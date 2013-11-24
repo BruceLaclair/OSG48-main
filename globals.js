@@ -24,6 +24,8 @@ var CONTEXTSWITCH_IRQ = 2;
 
 var INVALID_OPCODE_IRQ = 3;
 
+var FILE_SYSTEM_IRQ = 4;
+
 
 //
 // Global Variables
@@ -92,6 +94,7 @@ var _TsundereMode = false;
 
 // Global Device Driver Objects - page 12
 var krnKeyboardDriver = null;
+var krnHardDriveDriver = null;
 
 // For testing...
 var _GLaDOS = null;

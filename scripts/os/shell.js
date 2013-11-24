@@ -10,7 +10,7 @@ function Shell() {
     // Properties
     this.promptStr   = ">";
     this.commandList = [];
-    this.curses      = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
+    this.curses      = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf], [ybir]";
     this.apologies   = "[sorry], [gomenen], [gomen], [gomenasai]";
     // Methods
     this.init        = shellInit;
@@ -132,10 +132,46 @@ function shellInit() {
 	// breakme
 	sc = new ShellCommand();
 	sc.command = "breakme";
-	sc.description = "- Use this at your own peril, does not bsod, I pwomise"
+	sc.description = "- Use this at your own peril, does not bsod, I pwomise";
 	sc.function = shellBreak;
 	this.commandList[this.commandList.length] = sc;
+	
+	// format
+	sc = new ShellCommand();
+	sc.command = "format";
+	sc.description = "- Using this will set up the hard drive so that you can create files.";
+	sc.function = shellFormat;
+	this.commandList[this.commandList.length] = sc;
+	
+	// create <String>
+	sc = new ShellCommand();
+	sc.command = "create";
+	sc.description = "- Use this and I will create a new file for you";
+	sc.function = shellCreate;
+	this.commandList[this.commandList.length] = sc;
+	
+	// read <String>
+	sc = new ShellCommand();
+	sc.command = "read";
+	sc.description = "- If you type this I will read the file to you... can't seem to read it yourself.";
+	sc.function = shellRead;
+	this.commandList[this.commandList.length] = sc;
+	
+	// write <String> <String>
+	sc = new ShellCommand();
+	sc.command = "write";
+	sc.description = "- I will write to the file that you specify with what you specify in quotes";
+	sc.function = shellWrite;
+	this.commandList[this.commandList.length] = sc;
+	
+	// delete <String>
+	sc = new ShellCommand();
+	sc.command = "delete";
+	sc.description = "- I will make sure that you never see that filthy dirty file again.";
+	sc.function = shellDelete;
+	this.commandList[this.commandList.length] = sc;
 
+	
     // rot13 <string>
     sc = new ShellCommand();
     sc.command = "rot13";
@@ -702,6 +738,31 @@ function shellPrompt(args)
     {
         _StdIn.putText("Usage: prompt <string>  Please supply a string.");
     }
+}
+
+function shellFormat(args)
+{
+	_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 0) );  
+}
+
+function shellCreate(args)
+{
+	_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 1) );  
+}
+
+function shellWrite(args)
+{
+	_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 2) );  
+}
+
+function shellRead(args)
+{
+	_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 3) );  
+}
+
+function shellDelete(args)
+{
+	_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 4) );  
 }
 
 function shellProcesses(args)

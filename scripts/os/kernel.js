@@ -31,9 +31,15 @@ function krnBootstrap()      // Page 8.
 
    // Load the Keyboard Device Driver
    krnTrace("Loading the keyboard device driver.");
-   krnKeyboardDriver = new DeviceDriverKeyboard();     // Construct it.  TODO: Should that have a _global-style name?
+   krnKeyboardDriver = new DeviceDriverKeyboard();      // Construct it.  TODO: Should that have a _global-style name?
    krnKeyboardDriver.driverEntry();                    // Call the driverEntry() initialization routine.
    krnTrace(krnKeyboardDriver.status);
+   
+   // Load the File System Device Driver
+   krnTrace("Loading the Hard Drive device driver.");
+   krnHardDriveDriver = new FileSystemDeviceDriver();    // Construct it.  TODO: Should that have a _global-style name?
+   krnHardDriveDriver.driverEntry();                    // Call the driverEntry() initialization routine.
+   krnTrace(krnHardDriveDriver.status);
 
    //
    // ... more?
@@ -49,9 +55,9 @@ function krnBootstrap()      // Page 8.
    _OsShell.init();
 
    // Finally, initiate testing.
-   if (_GLaDOS) {
+   /*if (_GLaDOS) {
       _GLaDOS.afterStartup();
-   }
+   }*/
 }
 
 function krnShutdown()
@@ -135,6 +141,10 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 			break;
 		case INVALID_OPCODE_IRQ:
 			_CPU.InvalidOpCode();
+			break;
+		case FILE_SYSTEM_IRQ:
+			krnHardDriveDriver.isr(params);
+			break;
         default: 
             krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
     }
