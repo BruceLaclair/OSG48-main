@@ -135,10 +135,6 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 			break;
 		case INVALID_OPCODE_IRQ:
 			_CPU.InvalidOpCode();
-			break;
-		case DONT_TOUCH_ME_THERE_IRQ:
-			_PCB.MemoryOutOfBoundsError();
-			break;	
         default: 
             krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
     }
@@ -195,7 +191,7 @@ function krnTrapError(msg)
     hostLog("OS ERROR - TRAP: " + msg);
 	document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanSad.jpg\" alt = \"Natsu-chan\"></label>"
 	_DrawingContext.crashScreen();
-	document.getElementById('pstatusUpdate').innerHTML="I am sorry it looks like you cwashed " + msg;
-    // TODO: Display error on console, perhaps in some sort of colored screen. (Perhaps blue?)
+	document.getElementById('pstatusUpdate').innerHTML="I am sorry it looks like you cwashed... " + msg;
+    _CPU.isExecuting = false;
     krnShutdown();
 }
