@@ -24,8 +24,6 @@ var CONTEXTSWITCH_IRQ = 2;
 
 var INVALID_OPCODE_IRQ = 3;
 
-var DONT_TOUCH_ME_THERE_IRQ = 4;
-
 
 //
 // Global Variables
@@ -33,6 +31,7 @@ var DONT_TOUCH_ME_THERE_IRQ = 4;
 var _CPU = null;
 var _Memory = null;
 var _NumPrograms = 0; //Number of inputed programs so far
+var _CanvasWidth = 800;  // This is the width of the canvas which is important for scrolling.
 
 //Setting up all of the possible control blocks
 var _PCB = null;
@@ -43,6 +42,10 @@ var _PCB3 = null;
 *	To be used later
 *	var _PCB3 = null;
 */
+
+//Silly things to make things work and stuff...
+
+var _NumTimesRan = 0;
 
 
 //GLOBAL LIMITZ

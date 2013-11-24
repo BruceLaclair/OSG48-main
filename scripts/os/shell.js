@@ -455,60 +455,69 @@ function shellRun(args)
     { 
 		if(args[0] === "0")
 		{
-			_PCB1.reset();
+			_CPU.PC = _BlockOne;
+			_CPU.Scheduler(_PCB1);
 			document.getElementById("PC").innerHTML=_CPU.PC;
-			if(_ReadyQueue.isEmpty())
+			if(_NumTimesRan === 0)
 			{
 				document.getElementById("RQ1").innerHTML=_PCB1.toString();
+				_NumTimesRan++;
 			}
-			else if(_ReadyQueue.getSize() === 1)
+			else if(_NumTimesRan === 1)
 			{
 				document.getElementById("RQ2").innerHTML=_PCB1.toString();
+				_NumTimesRan++;
 			}
-			else if(_ReadyQueue.getSize() === 2)
+			else if(_NumTimesRan === 2)
 			{
 				document.getElementById("RQ3").innerHTML=_PCB1.toString();
+				_NumTimesRan = 0;
 			}
-			_CPU.Scheduler(_PCB1);
 			_CPU.isExecuting = true;
 		}
 		else if(args[0] === "1")
 		{
-			_PCB2.reset();
+			_CPU.PC = _BlockTwo;
+			_CPU.Scheduler(_PCB2);
 			document.getElementById("PC").innerHTML=_CPU.PC;
-			if(_ReadyQueue.isEmpty())
+			if(_NumTimesRan === 0)
 			{
 				document.getElementById("RQ1").innerHTML=_PCB2.toString();
+				_NumTimesRan++;
 			}
-			else if(_ReadyQueue.getSize() === 1)
+			else if(_NumTimesRan === 1)
 			{
 				document.getElementById("RQ2").innerHTML=_PCB2.toString();
+				_NumTimesRan++;
 			}
-			else if(_ReadyQueue.getSize() === 2)
+			else if(_NumTimesRan === 2)
 			{
 				document.getElementById("RQ3").innerHTML=_PCB2.toString();
+				_NumTimesRan = 0;
 			}
-			_CPU.Scheduler(_PCB2);
 			_CPU.isExecuting = true;
 		}
 		else if(args[0] === "2")
 		{
-			_PCB3.reset();
-			document.getElementById("PC").innerHTML=_CPU.PC;
-			if(_ReadyQueue.isEmpty())
+				_CPU.pc = _BlockThree;
+				_CPU.Scheduler(_PCB3);
+				document.getElementById("PC").innerHTML=_CPU.PC;
+			if(_NumTimesRan === 0)
 			{
 				document.getElementById("RQ1").innerHTML=_PCB3.toString();
+				_NumTimesRan++;
 			}
-			else if(_ReadyQueue.getSize() === 1)
+			else if(_NumTimesRan === 1)
 			{
 				document.getElementById("RQ2").innerHTML=_PCB3.toString();
+				_NumTimesRan++;
 			}
-			else if(_ReadyQueue.getSize() === 2)
+			else if(this.numTimesRan === 2)
 			{
 				document.getElementById("RQ3").innerHTML=_PCB3.toString();
+				_NumTimesRan = 0;
 			}
-			_CPU.Scheduler(_PCB3);
-			_CPU.isExecuting = true;
+				_CPU.isExecuting = true;
 		}
 		else
 		{
@@ -539,20 +548,17 @@ function shellRunAll(args)
 {
 	_CPU.PC = _BlockOne;
 	_CPU.Scheduler(_PCB1);
-	_PCB1.reset();
 	_CPU.isExecuting = true;
 	document.getElementById("PC").innerHTML=_CPU.PC;
 	document.getElementById("RQ1").innerHTML=_PCB1.toString();
 	if(_PCB2 != null)
 	{
 		_CPU.Scheduler(_PCB2);
-		_PCB2.reset();
 		document.getElementById("RQ2").innerHTML=_PCB2.toString();
 	}
 	if(_PCB3 != null)
 	{
 		_CPU.Scheduler(_PCB3);
-		_PCB3.reset();
 		document.getElementById("RQ3").innerHTML=_PCB3.toString();
 	}
 };
@@ -749,42 +755,15 @@ function shellKill(args)
 	{
 		if(args[0] === "0")
 		{
-			_PCB1.reset();
 			_PCB1.isDone = true;
-			if(_ReadyQueue.isEmpty())
-			{
-				_CPU.isExecuting = false;
-			}
-			else
-			{
-				_KernelInterruptQueue.enqueue( new Interrupt(CONTEXTSWITCH_IRQ, 0) );
-			}
 		}
 		else if(args[0] === "1")
 		{
-			_PCB2.reset();
 			_PCB2.isDone = true;
-			if(_ReadyQueue.isEmpty())
-			{
-				_CPU.isExecuting = false;
-			}
-			else
-			{
-				_KernelInterruptQueue.enqueue( new Interrupt(CONTEXTSWITCH_IRQ, 0) );
-			}
 		}
 		else if(args[0] === "2")
 		{
-			_PCB3.reset();
 			_PCB3.isDone = true;
-			if(_ReadyQueue.isEmpty())
-			{
-				_CPU.isExecuting = false;
-			}
-			else
-			{
-				_KernelInterruptQueue.enqueue( new Interrupt(CONTEXTSWITCH_IRQ, 0) );
-			}
 		}
 		else
 		{
@@ -802,7 +781,7 @@ function shellKill(args)
 	{
 		if (!_TsundereMode)
 			{
-				_StdIn.putText("What did you want me to kill?");
+			_StdIn.putText("What did you want me to kill?");
 			}
 		else
 			{
