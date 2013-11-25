@@ -101,10 +101,18 @@ function shellInit() {
 	sc.function = shellQuantum;
 	this.commandList[this.commandList.length] = sc;
 	
+	
+	// setschedule [rr, fcfs, priority]
+	sc = new ShellCommand();
+	sc.command = "setschedule";
+	sc.description = "- Tells me which scheduling algorithm you would like me to use.";
+	sc.function = shellScheduler;
+	this.commandList[this.commandList.length] = sc;
+	
     // shutdown
     sc = new ShellCommand();
     sc.command = "shutdown";
-    sc.description = "- Shuts down the virtual OS but leaves the underlying hardware simulation running.";
+    sc.description = "- Shuts down the virtual OS but leaves the underlying hardware simulation running";
     sc.function = shellShutdown;
     this.commandList[this.commandList.length] = sc;
 
@@ -169,6 +177,13 @@ function shellInit() {
 	sc.command = "delete";
 	sc.description = "- I will make sure that you never see that filthy dirty file again.";
 	sc.function = shellDelete;
+	this.commandList[this.commandList.length] = sc;
+	
+	// ls
+	sc = new ShellCommand();
+	sc.command = "ls"
+	sc.description = "- Type this and I will list all of the files that are currently created."
+	sc.function = shellList;
 	this.commandList[this.commandList.length] = sc;
 
 	
@@ -269,8 +284,8 @@ function shellParseInput(buffer)
     // 1. Remove leading and trailing spaces.
     buffer = trim(buffer);
 
-    // 2. Lower-case it.
-    buffer = buffer.toLowerCase();
+    // 2. Lower-case it.  Well we would if we wanted to lowercase everything see 4.2
+    //buffer = buffer.toLowerCase();
 
     // 3. Separate on spaces so we can determine the command and command-line args, if any.
     var tempList = buffer.split(" ");
@@ -279,8 +294,9 @@ function shellParseInput(buffer)
     var cmd = tempList.shift();  // Yes, you can do that to an array in JavaScript.  See the Queue class.
     // 4.1 Remove any left-over spaces.
     cmd = trim(cmd);
-    // 4.2 Record it in the return value.
-    retVal.command = cmd;
+    // 4.2 Record it in the return value.  Because we do not want to lowercase EVERYTHING that is typed we only care about the command
+	//     I moved the toLowerCase to the command
+    retVal.command = cmd.toLowerCase();
 
     // 5. Now create the args array from what's left.
     for (var i in tempList)
@@ -426,6 +442,12 @@ function shellNihaha(args)
 
 function shellLoad(args)
 {
+
+	var priority = 100;
+	if (args.length === 1)
+    { 
+		priority = args[0];
+	}
 	var programInput = document.getElementById("taProgramInput").value;
 	//checks for the existence of any characters that isn't hex and return true if it is.
 	var hexValidator =  /[g-z]/gi;
@@ -444,7 +466,7 @@ function shellLoad(args)
 			{
 				var i = _BlockOne;
 				_PCB1 = new PCB;
-				_PCB1.init(_NumPrograms);
+				_PCB1.init(_NumPrograms, priority);
 				document.getElementById("RL1").innerHTML=_PCB1.toString();
 				_ResidentList.push(_PCB1.toString());
 			}
@@ -452,15 +474,15 @@ function shellLoad(args)
 			{
 				var i = _BlockTwo;
 				_PCB2 = new PCB;
-				_PCB2.init(_NumPrograms);
+				_PCB2.init(_NumPrograms, priority);
 				document.getElementById("RL2").innerHTML=_PCB2.toString();
 				_ResidentList.push(_PCB2.toString());
 			}
-			else
+			else if(_NumPrograms === 2)
 			{
 				var i = _BlockThree;
 				_PCB3 = new PCB;
-				_PCB3.init(_NumPrograms);
+				_PCB3.init(_NumPrograms, priority);
 				document.getElementById("RL3").innerHTML=_PCB3.toString();
 				_ResidentList.push(_PCB3.toString());
 			}
@@ -618,7 +640,15 @@ function shellQuantum(args)
 {
 	if (args.length > 0)
 	{
-		_Quantum = args[0];
+		if(_CpuSchedule === "fcfs" || _CpuSchedule === "priority")
+		{
+			_QuantumBackUp = args[0];
+		}
+		else
+		{
+			_Quantum = args[0];
+			_QuantumBackUp = _Quantum;
+		}
 	}
 	else
 	{
@@ -742,27 +772,200 @@ function shellPrompt(args)
 
 function shellFormat(args)
 {
+	_DidFormat = true;
 	_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 0) );  
 }
 
 function shellCreate(args)
 {
-	_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 1) );  
+	if(_DidFormat)
+	{
+		if (args.length === 0)
+		{
+			if (!_TsundereMode)
+				{
+					_StdIn.putText("you know...I would be happy too...just tell me what you want me to name it");
+				}
+			else
+				{
+					_StdIn.putText("To think...Someone could actually fall in love with someone like you.");
+				}
+		}
+		var tempName = args[0];
+		var nameValidator =  /\W/gi;
+		if(tempName.length < 8 && !nameValidator.test(tempName))
+		{
+			_FileName = tempName.toLowerCase();
+			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 1) );  
+		}
+		else
+		{
+			if (!_TsundereMode)
+				{
+					_StdIn.putText("Please only include letters in the file name and make sure it is less then 8 characters");
+				}
+			else
+				{
+					_StdIn.putText("You are the reason we have to take such limits No more then 8 regular characters");
+				}
+		}
+	}
+	else
+		{
+			if (!_TsundereMode)
+			{
+				_StdIn.putText("Please format first");
+			}
+			else
+			{
+				_StdIn.putText("Eww you sick freak, your not even going to format and clean the disk first?");
+			}
+		}
 }
 
 function shellWrite(args)
 {
-	_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 2) );  
+	if(_DidFormat)
+	{
+		if (args.length <= 1)
+		{
+			if (!_TsundereMode)
+				{
+					_StdIn.putText("you know...I would be happy to...just tell me what file you want me to write");
+				}
+			else
+				{
+					_StdIn.putText("To think...Someone could actually fall in love with someone like you.");
+				}
+		}
+		else
+		{
+			var tempName = args[0];
+			var nameValidator =  /\W/gi;
+			if(tempName.length < 8 && !nameValidator.test(tempName))
+			{
+				_FileName = tempName.toLowerCase();
+				_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 2) );  
+			}
+			else
+			{
+				if (!_TsundereMode)
+					{
+						_StdIn.putText("Please only include letters in the file name and make sure it is less then 8 characters");
+					}
+				else
+					{
+						_StdIn.putText("You are the reason we have to take such limits No more then 8 regular characters");
+					}
+			}
+			for(i = 1; i < args.length; i++)
+			{
+				_ToBeWritten += args[i] + " ";
+			}
+		}
+	}
+	else
+	{
+		if (!_TsundereMode)
+		{
+			_StdIn.putText("Please format first");
+		}
+		else
+		{
+			_StdIn.putText("Eww you sick freak, your not even going to format and clean the disk first?");
+		}
+	}
 }
 
 function shellRead(args)
 {
-	_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 3) );  
+	if(_DidFormat)
+	{
+		var tempName = args[0];
+		var nameValidator =  /\W/gi;
+		if(tempName.length < 8 && !nameValidator.test(tempName))
+		{
+			_FileName = tempName.toLowerCase();
+			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 3) );  
+		}
+		else
+		{
+			if (!_TsundereMode)
+				{
+					_StdIn.putText("Please only include letters in the file name and make sure it is less then 8 characters");
+				}
+			else
+				{
+					_StdIn.putText("You are the reason we have to take such limits No more then 8 regular characters");
+				}
+		}
+	}
+	else
+		{
+			if (!_TsundereMode)
+			{
+				_StdIn.putText("Please format first");
+			}
+			else
+			{
+				_StdIn.putText("Eww you sick freak, your not even going to format and clean the disk first?");
+			}
+		}
 }
 
 function shellDelete(args)
 {
-	_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 4) );  
+	if(_DidFormat)
+	{
+		var tempName = args[0];
+		var nameValidator =  /\W/gi;
+		if(tempName.length < 8 && !nameValidator.test(tempName))
+		{
+			_FileName = tempName.toLowerCase();
+			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 4) );  
+		}
+		else
+		{
+			if (!_TsundereMode)
+				{
+					_StdIn.putText("Please only include letters in the file name and make sure it is less then 8 characters");
+				}
+			else
+				{
+					_StdIn.putText("You are the reason we have to take such limits No more then 8 regular characters");
+				}
+		}
+	}
+	else
+		{
+			if (!_TsundereMode)
+			{
+				_StdIn.putText("Please format first");
+			}
+			else
+			{
+				_StdIn.putText("Eww you sick freak, your not even going to format and clean the disk first?");
+			}
+		}
+}
+
+function shellList(args)
+{
+	if(_DidFormat)
+	{
+		_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 5) );
+	}
+	else
+	{
+		if (!_TsundereMode)
+		{
+			_StdIn.putText("Please format first");
+		}
+		else
+		{
+			_StdIn.putText("Eww you sick freak, your not even going to format and clean the disk first?");
+		}
+	}
 }
 
 function shellProcesses(args)
@@ -830,11 +1033,11 @@ function shellKill(args)
 		{
 			if (!_TsundereMode)
 			{
-			_StdIn.putText("Sorry I can't kill what doesn't exsist.");
+			_StdIn.putText("Sorry I can't kill what doesn't exist.");
 			}
 		else
 			{
-				_StdIn.putText("Stupidity like yours does not belong in this world, prepare to die.");
+				_StdIn.putText("Stupidity like yours does not belong in this world, please die.");
 			}
 		}
 	}
@@ -849,4 +1052,39 @@ function shellKill(args)
 				_StdIn.putText("Kill what?  I guess you really do have a death wish...well if you insist.");
 			}
 	}
+}
+
+function shellScheduler(args)
+{
+	if (args.length > 0)
+    {
+        if(args[0].toLowerCase() === "fcfs" && _CpuSchedule !== "fcfs")
+		{
+			_QuantumBackup = _Quantum;
+			_Quantum = 1000000;
+			_StdIn.putText("Sooo I set it to First Come First Serve have fun");
+		}
+		else if(args[0].toLowerCase() === "rr" && _CpuSchedule !== "rr")
+		{
+			_Quantum = _QuantumBackup;
+			_StdIn.putText("Sooo I set it to Round Robin have fun");
+		}
+		else if(args[0].toLowerCase() === "priority" && _CpuSchedule !== "priority")
+		{
+			_QuantumBackup = _Quantum;
+			_Quantum = 1000000;
+			_StdIn.putText("Sooo I set it to priority have fun");
+		}
+    }
+    else
+    {
+        if (!_TsundereMode)
+		{
+			_StdIn.putText("Well what method do you want me to use?");
+		}
+		else
+			{
+				_StdIn.putText("Do we really have to go over this again? Honestly I figured you would learn by now");
+			}
+    }
 }

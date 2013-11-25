@@ -139,6 +139,9 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 		case CONTEXTSWITCH_IRQ:
 			_CPU.ContextSwitch();
 			break;
+		case PRIORITY_IRQ:
+			_CPU.FixPriority();
+			break;
 		case INVALID_OPCODE_IRQ:
 			_CPU.InvalidOpCode();
 			break;

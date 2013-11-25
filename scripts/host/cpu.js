@@ -22,6 +22,7 @@ function Cpu() {
         this.isExecuting = false;  
 		this.QuantumTicks = _Quantum;
 		this.tickSenseValidOpCode = 0;
+		this.isPriority = false;
     
     this.init = function() {
 		this.PC    = 0;     // Program Counter
@@ -242,7 +243,14 @@ function Cpu() {
 	
 	this.CPUScheduler = function()
 	{
-		if(this.QuantumTicks >= _Quantum)
+		if(_CpuSchedule === "priority")
+		{
+			if(!this.isPriority)
+			{
+				_KernelInterruptQueue.enqueue( new Interrupt(PRIORITY_IRQ, 0) );
+			}
+		}
+		else if(this.QuantumTicks >= _Quantum)
 		{
 			_KernelInterruptQueue.enqueue( new Interrupt(CONTEXTSWITCH_IRQ, 0) );
 		}
@@ -314,6 +322,58 @@ function Cpu() {
 		this.QuantumTicks = 0;		
 	};
 	
+	this.FixPriority = function()
+	{
+	//Really all Priority is is FIrst come First serve in a particular order, as a result, I simply recreate the ready queue
+	//Based on the priority values in the PCB
+		var maxPriorityNum = _PCB1.priority;
+		var maxPriority = _PCB1;
+		var nextPriorityNum = _PCB2.priority;
+		var nextPriority = _PCB2;
+		var thirdNum = _PCB3.priority;
+		var thirdPriority = _PCB3;
+		//Insert Last Here
+		if(maxPriorityNum < _PCB2.priority)
+		{
+			if(nextPriorityNum < maxPriorityNum)
+			{
+				if(thirdNum < nextPriorityNum)
+				{
+					thirdNum = nextPriorityNum;
+					thirdPriority = nextPriority;
+				}
+				nextPriorityNum = maxPriorityNum;
+				nextPriority = maxPriority;
+			}
+			maxPriorityNum = _PCB2.priority;
+			maxPriority = _PCB2;
+		}
+		else if(maxPriorityNum < _PCB3.prioritiy)
+		{
+			if(nextPriorityNum < maxPriorityNum)
+			{
+				if(thirdNum < nextPriorityNum)
+				{
+					thirdNum = nextPriorityNum;
+					thirdPriority = nextPriority;
+				}
+				nextPriorityNum = maxPriorityNum;
+				nextPriority = maxPriority;
+			}
+			maxPriorityNum = _PCB3.priority;
+			maxPriority = _PCB3;
+		}
+		
+		while(!_ReadyQueue.isEmpty)
+		{
+			_ReadyQueue.dequeue();
+		}
+		_ReadyQueue.enqueue(maxPriority);
+		_ReadyQueue.enqueue(nextPriority);
+		_ReadyQueue.enqueue(thirdPriority);
+		
+	}
+	
 	this.InvalidOpCode = function()
 	{
 			_PCB.isDone = true;
@@ -323,7 +383,7 @@ function Cpu() {
 			}
 			else
 			{
-				_StdIn.putText("God, who taught you how to program? A コワラ？ because you are terrible at it " + (this.PC + _PCB.base));
+				_StdIn.putText("God, who taught you how to program? A Ko-Wa_La? because you are terrible at it " + (this.PC + _PCB.base));
 			}
 	};
 }

@@ -16,15 +16,17 @@ function PCB(){
 	this.YRegVal = 0;
 	this.ZFlagVal = 0;
 	this.ACCVal = 0;
+	this.priority = 0;
 	this.isDone = false;
 	
-	this.init = function(ID){
+	this.init = function(ID, p){
 		this.PID = ID;
 		this.PCLoc = 0;
 		this.XRegVal = 0;
 		this.YRegVal = 0;
 		this.ZFlagVal = 0;
 		this.ACCVal = 0;
+		this.priority = p;
 		this.isDone = false;
 		if(ID === 0)
 		{

@@ -105,10 +105,6 @@ function CLIconsole() {
            {
                // This is a "normal" character, so ...
                // ... draw it on the screen...
-			   if(this.CurrentXPosition > _CanvasWidth)
-				{
-					this.advanceLine();
-				}
                this.putText(chr);
                // ... and add it to our buffer.
                this.buffer += chr;
@@ -129,6 +125,10 @@ function CLIconsole() {
          // Move the current X position.
            var offset = _DrawingContext.measureText(this.CurrentFont, this.CurrentFontSize, text);
            this.CurrentXPosition = this.CurrentXPosition + offset;
+			if(this.CurrentXPosition > _CanvasWidth)
+			{
+				this.advanceLine();
+			}
 		   textMem.push(text);
        }
     };
