@@ -57,3 +57,20 @@ function checkTime(i)
 	}
 	return i;
 }
+
+function utilShowMe_click(btn)
+{
+	var HDDInfo = "";
+	for(i = 0; i < _NumTracks; i++)
+	{
+		for(j = 0; j < _NumSectors; j++)
+		{
+			for(k = 0; k < _NumBlocks; k++)
+			{
+				var TSB = i.toString() + j.toString() + k.toString();
+				HDDInfo += TSB + ": " + localStorage[TSB] + "\n";
+			}
+		}
+	}
+	window.alert(HDDInfo);
+}
