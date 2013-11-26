@@ -28,6 +28,8 @@ var INVALID_OPCODE_IRQ = 4;
 
 var FILE_SYSTEM_IRQ = 5;
 
+var SWAP_IRQ = 6;
+
 
 //
 // Global Variables
@@ -44,7 +46,7 @@ var _PCB = null;
 var _PCB1 = null;
 var _PCB2 = null;
 var _PCB3 = null;
-var _PCB3 = null;
+var _PCB4 = null;
 
 //Silly things to make things work and stuff...
 
@@ -71,6 +73,9 @@ var _FSsize = 64;
 var _WritableChar = 59;
 var _FileName = "";
 var _ToBeWritten = "";
+var _ToBeRead = "";
+var _ToBePrinted = true;
+var _StartingPoint = 0;
 
 var _OSclock = 0;       // Page 23.
 

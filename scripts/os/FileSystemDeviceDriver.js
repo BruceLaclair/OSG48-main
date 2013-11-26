@@ -78,9 +78,6 @@ function format()
 		}
 	}
 	localStorage[_MBR] = "I am the Master Bootね";
-	_StdIn.putText("All done, but...d..don't get used to it...it's not like I did it because I wanted to...");
-	_StdIn.advanceLine();
-	_StdIn.putText(_OsShell.promptStr);
 }
 
 function create(params)
@@ -107,12 +104,7 @@ function create(params)
 		}
 		localStorage[emptyDir] = "1" + findAvailableData() + _FileName + "ね";
 		localStorage[findAvailableData()] = "1AKB" + localStorage[findAvailableData()].substring(4);
-		_StdIn.putText("Kay that wasn't so bad I created the file " + _FileName + " for you");
-		_StdIn.advanceLine();
-		_StdIn.putText(_OsShell.promptStr);
-	
 	}
-	_FileName = "";
 }
 
 function write(params)
@@ -121,19 +113,26 @@ function write(params)
 	var i = 0;
 	if(locale)
 	{
+		if(localStorage[locale].substring(1,4) !== "AKB")
+		{
+			deleteFile(_FileName);
+			create(_FileName);
+		}
+		locale = findFileName(_FileName);
 		var NeededBlocks = Math.floor(_ToBeWritten.length/_WritableChar) + 1;
 		while(NeededBlocks > 0)
 		{
-			needsToBeWritten = _ToBeWritten.substring(i*_WritableChar,i*_WritableChar + _WritableChar+1);
+			needsToBeWritten = _ToBeWritten.substring(i*_WritableChar,(i*_WritableChar + _WritableChar));
 			localStorage[locale] = "1AKB";
 			if(NeededBlocks === 1)
 			{
 				localStorage[locale] = "1AKB" + needsToBeWritten + "ね";
-				_StdIn.putText("I...well I wrote it...bu...bu..but...I am not doing it because you told me too");
-				_StdIn.advanceLine();
-				_StdIn.putText(_OsShell.promptStr);
 				NeededBlocks--;
-				_ToBeWritten = "";
+				if(!_ToBePrinted)
+				{
+					_ToBePrinted = true;
+					_CPU.isDoneWriting();
+				}
 			}
 			else
 			{
@@ -176,25 +175,32 @@ function read(params)
 {
 	var locale = findFileName(_FileName);
 	var i = 0;
-	var toBeRead = "";
 	var atTheEnd = false;
+	_ToBeRead = "";
 	if(locale)
 	{
 		while(!atTheEnd)
 		if(localStorage[locale].indexOf("ね") !== -1)
 		{
-			toBeRead += localStorage[locale].substring(4, localStorage[locale].indexOf("ね"));
-			for(i = 0; i < toBeRead.length; i++)
+			_ToBeRead += localStorage[locale].substring(4, localStorage[locale].indexOf("ね"));
+			if(_ToBePrinted)
 			{
-				_StdIn.putText(toBeRead[i]);
+				for(i = 0; i < _ToBeRead.length; i++)
+				{
+					_StdIn.putText(_ToBeRead[i]);
+				}
+				_StdIn.advanceLine();
+				_StdIn.putText(_OsShell.promptStr);
 			}
-			_StdIn.advanceLine();
-			_StdIn.putText(_OsShell.promptStr);
+			else
+			{
+				_CPU.toRead();
+			}
 			atTheEnd = true;
 		}
 		else
 		{
-			toBeRead += localStorage[locale].substring(4);
+			_ToBeRead += localStorage[locale].substring(4);
 			locale = localStorage[locale].substring(1,4);
 		}
 	}
@@ -227,9 +233,6 @@ function deleteFile(params)
 		{
 			localStorage[locale] = "0AKB" + localStorage[locale].substring(4);
 			localStorage[findFile(_FileName)] = "0AKB" + localStorage[findFile(_FileName)].substring(4);
-			_StdIn.putText("I removed it, just like you wanted.  I did a good job right?");
-			_FileName = "";
-			_ToBeWritten = "";
 			atTheEnd = true;
 		}
 		else

@@ -454,7 +454,7 @@ function shellLoad(args)
 	if(!hexValidator.test(programInput))
 	{
 		document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanHappy.jpg\" alt = \"Natsu-chan\"></label>"
-		if(_NumPrograms >= 3)
+		if(_NumPrograms > 3)
 		{
 			_StdIn.putText("Swrry but my mammaries aren't that large...I meant memories");
 			document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanBlush.jpg\" alt = \"Natsu-chan\"></label>"
@@ -486,17 +486,57 @@ function shellLoad(args)
 				document.getElementById("RL3").innerHTML=_PCB3.toString();
 				_ResidentList.push(_PCB3.toString());
 			}
+			else if(_NumPrograms === 3)
+			{
+				var i = -1;
+				_PCB4 = new PCB;
+				_PCB4.init(_NumPrograms, priority);
+				document.getElementById("RL4").innerHTML=_PCB4.toString();
+				_ResidentList.push(_PCB4.toString());
+			}
 			//Go through the program being entered and add it to memory, the real memory.
 			var toBeEntered = programInput.split(" ");
 			var j = 0;
-			while (j < toBeEntered.length)
+			if(i !== -1)
 			{
-				_Memory.memory[i] = toBeEntered[j];
-				document.getElementById(i).innerHTML=_Memory.memory[i];
-				j++;
-				i++;
+				while (j < toBeEntered.length)
+				{
+					_Memory.memory[i] = toBeEntered[j];
+					document.getElementById(i).innerHTML=_Memory.memory[i];
+					j++;
+					i++;
+				}
+				_StdIn.putText("I assigned it PID: " + _NumPrograms++ + ", but...it's not like I did it for you or anything...");
 			}
-			_StdIn.putText("I assigned it PID: " + _NumPrograms++ + ", but...it's not like I did it for you or anything...");
+			else
+			{
+				if(!_DidFormat)
+				{
+					_ToBePrinted = false;
+					shellFormat();
+					_StdIn.putText("There wasn't enough room in memory so I wrote it to the disk, I hope you're happy");
+					_StdIn.advanceLine();
+					_StdIn.putText("The Disk wasn't formatted so I did that for you");
+					_StdIn.advanceLine();
+				}
+				_FileName = "~SwapFile";
+				_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 1) );
+				while (j < _BlockSize)
+				{
+					if(toBeEntered[j])
+					{
+						_ToBeWritten += toBeEntered[j] + " ";
+						j++;
+					}
+					else
+					{
+						_ToBeWritten += "00 ";
+						j++;
+					}
+				}
+				_FileName = "~SwapFile";
+				_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 2) );
+			}
 			document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanBlush.jpg\" alt = \"Natsu-chan\"></label>"
 		}
 	}
@@ -618,6 +658,11 @@ function shellRunAll(args)
 	{
 		_CPU.Scheduler(_PCB3);
 		document.getElementById("RQ3").innerHTML=_PCB3.toString();
+	}
+	if(_PCB4 != null)
+	{
+		_CPU.Scheduler(_PCB4);
+		document.getElementById("RQ4").innerHTML=_PCB4.toString();
 	}
 };
 
@@ -774,6 +819,15 @@ function shellFormat(args)
 {
 	_DidFormat = true;
 	_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 0) );  
+	if(_ToBePrinted)
+	{
+		_StdIn.putText("All done, but...d..don't get used to it...it's not like I did it because I wanted to...");
+		_StdIn.advanceLine();
+	}
+	else
+	{
+		_ToBePrinted = true;
+	}
 }
 
 function shellCreate(args)
@@ -795,8 +849,11 @@ function shellCreate(args)
 		var nameValidator =  /\W/gi;
 		if(tempName.length < 8 && !nameValidator.test(tempName))
 		{
-			_FileName = tempName.toLowerCase();
+			_FileName = "";
+			_FileName = tempName.toLowerCase().trim();
 			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 1) );  
+			_StdIn.putText("Kay that wasn't so bad I created the file " + _FileName + " for you");
+			_StdIn.advanceLine();
 		}
 		else
 		{
@@ -842,10 +899,17 @@ function shellWrite(args)
 		{
 			var tempName = args[0];
 			var nameValidator =  /\W/gi;
+			_ToBeWritten = "";
+			for(i = 1; i < args.length; i++)
+			{
+				_ToBeWritten += args[i] + " ";
+			}
 			if(tempName.length < 8 && !nameValidator.test(tempName))
 			{
-				_FileName = tempName.toLowerCase();
-				_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 2) );  
+				_FileName = tempName.toLowerCase().trim();
+				_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 2) ); 
+				_StdIn.putText("I...well I am writing it now but don't get the wrong idea...");
+				_StdIn.advanceLine();				
 			}
 			else
 			{
@@ -857,10 +921,6 @@ function shellWrite(args)
 					{
 						_StdIn.putText("You are the reason we have to take such limits No more then 8 regular characters");
 					}
-			}
-			for(i = 1; i < args.length; i++)
-			{
-				_ToBeWritten += args[i] + " ";
 			}
 		}
 	}
@@ -885,8 +945,12 @@ function shellRead(args)
 		var nameValidator =  /\W/gi;
 		if(tempName.length < 8 && !nameValidator.test(tempName))
 		{
-			_FileName = tempName.toLowerCase();
-			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 3) );  
+			_FileName = tempName.toLowerCase().trim();
+			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 3) ); 
+			for(i = 0; i < _ToBeRead.length; i++)
+			{
+				_StdIn.putText(_ToBeRead[i]);
+			}
 		}
 		else
 		{
@@ -921,8 +985,10 @@ function shellDelete(args)
 		var nameValidator =  /\W/gi;
 		if(tempName.length < 8 && !nameValidator.test(tempName))
 		{
-			_FileName = tempName.toLowerCase();
-			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 4) );  
+			_FileName = tempName.toLowerCase().trim();
+			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 4) ); 
+			_StdIn.putText("I am removing it right now, just like you wanted.  I am doing good right?");
+			_StdIn.advanceLine();
 		}
 		else
 		{

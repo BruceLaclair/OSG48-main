@@ -286,14 +286,32 @@ function Cpu() {
 		}
 		
 		_PCB = _ReadyQueue.dequeue();
-		if(_ReadyQueue.getSize() === 2)
+		if(_PCB.isOnDisk)
+		{
+			this.isExecuting = false;
+			_KernelInterruptQueue.enqueue( new Interrupt(SWAP_IRQ, temp) );
+			
+		}
+		if(_ReadyQueue.getSize() === 3)
+		{
+			document.getElementById('RQ4').innerHTML=temp.toString();
+			var tempPCB3 = document.getElementById('RQ4').textContent;
+			var tempPCB2 = document.getElementById('RQ3').textContent;
+			var tempPCB1 = document.getElementById('RQ2').textContent;
+			document.getElementById('RQ1').innerHTML=tempPCB1;
+			document.getElementById('RQ2').innerHTML=tempPCB2;
+			document.getElementById('RQ3').innerHTML=tempPCB3;	
+			document.getElementById('RQ4').innerHTML="さよおなら";	
+		}
+		else if(_ReadyQueue.getSize() === 2)
 		{
 			document.getElementById('RQ3').innerHTML=temp.toString();
 			var tempPCB2 = document.getElementById('RQ3').textContent;
 			var tempPCB1 = document.getElementById('RQ2').textContent;
 			document.getElementById('RQ2').innerHTML=tempPCB2;
 			document.getElementById('RQ1').innerHTML=tempPCB1;
-			document.getElementById('RQ3').innerHTML="さよおなら";
+			document.getElementById('RQ3').innerHTML="さよおなら";	
+			document.getElementById('RQ4').innerHTML="さよおなら";	
 		}
 		else if (_ReadyQueue.getSize() === 1)
 		{
@@ -302,13 +320,16 @@ function Cpu() {
 			document.getElementById('RQ1').innerHTML=tempPCB1;
 			document.getElementById('RQ2').innerHTML="さよおなら";
 			document.getElementById('RQ3').innerHTML="さよおなら";
+			document.getElementById('RQ4').innerHTML="さよおなら";
 		}
 		else if(_ReadyQueue.getSize() === 0)
 		{
 			document.getElementById('RQ1').innerHTML="さよおなら";
 			document.getElementById('RQ2').innerHTML="さよおなら";
-			document.getElementById('RQ3').innerHTML="さよおなら";
+			document.getElementById('RQ3').innerHTML="さよおなら";	
+			document.getElementById('RQ4').innerHTML="さよおなら";
 		}
+		
 		this.PC    = _PCB.PCLoc;
 		this.Acc   = _PCB.ACCVal;
 		this.Xreg  = _PCB.XRegVal;
@@ -319,12 +340,12 @@ function Cpu() {
 		document.getElementById('X').innerHTML=this.Xreg.toString(16);
 		document.getElementById('Y').innerHTML=this.Yreg.toString(16);
 		document.getElementById('Z').innerHTML=this.Zflag;
-		this.QuantumTicks = 0;		
+		this.QuantumTicks = 0;	
 	};
 	
 	this.FixPriority = function()
 	{
-	//Really all Priority is is FIrst come First serve in a particular order, as a result, I simply recreate the ready queue
+	//Really Priority is similar to First come First serve with a particular order, as a result, I simply recreate the ready queue
 	//Based on the priority values in the PCB
 		var maxPriorityNum = _PCB1.priority;
 		var maxPriority = _PCB1;
@@ -383,7 +404,59 @@ function Cpu() {
 			}
 			else
 			{
-				_StdIn.putText("God, who taught you how to program? A Ko-Wa_La? because you are terrible at it " + (this.PC + _PCB.base));
+				_StdIn.putText("God, who taught you how to program? A Ko-Wa-La? because you are terrible at it " + (this.PC + _PCB.base));
 			}
 	};
+	
+	this.Swap = function(temp)
+	{
+			_FileName = "~SwapFile";
+			_ToBePrinted = false;
+			var j = temp.base;
+			_ToBeWritten = "";
+			_StartingPoint = temp.base;
+			while (j <= temp.limit)
+			{
+				_ToBeWritten += _Memory.memory[j] + " ";
+				j++;
+			}
+			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 3) );
+			temp.isOnDisk = true;
+			_PCB.base = temp.base;
+			_PCB.limit = temp.limit;
+			_PCB.isOnDisk = false;
+	};
+	
+	this.toRead = function()
+	{
+		j = _StartingPoint;
+		var toBeSwapped = "";
+		toBeSwapped = _ToBeRead.split(" ");
+		for(i = 0; i <= _BlockSize; i++)
+		{
+			_Memory.memory[j] = toBeSwapped[i];
+			document.getElementById(j).innerHTML=_Memory.memory[j];
+			j++;
+		}
+		_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 2) );
+	};
+	
+	this.isDoneWriting = function()
+	{
+		this.PC    = _PCB.PCLoc;
+		this.Acc   = _PCB.ACCVal;
+		this.Xreg  = _PCB.XRegVal;
+		this.Yreg  = _PCB.YRegVal;
+		this.Zflag = _PCB.ZFlagVal;
+		document.getElementById('PC').innerHTML=this.PC + _PCB.base;
+		document.getElementById('ACC').innerHTML=this.Acc;
+		document.getElementById('X').innerHTML=this.Xreg.toString(16);
+		document.getElementById('Y').innerHTML=this.Yreg.toString(16);
+		document.getElementById('Z').innerHTML=this.Zflag;	
+		document.getElementById('RL1').innerHTML=_PCB1.toString();
+		document.getElementById('RL2').innerHTML=_PCB2.toString();
+		document.getElementById('RL3').innerHTML=_PCB3.toString();	
+		document.getElementById('RL4').innerHTML=_PCB4.toString();
+		this.isExecuting = true;	
+	}
 }

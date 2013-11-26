@@ -55,9 +55,9 @@ function krnBootstrap()      // Page 8.
    _OsShell.init();
 
    // Finally, initiate testing.
-   /*if (_GLaDOS) {
+   if (_GLaDOS) {
       _GLaDOS.afterStartup();
-   }*/
+   }
 }
 
 function krnShutdown()
@@ -147,6 +147,9 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 			break;
 		case FILE_SYSTEM_IRQ:
 			krnHardDriveDriver.isr(params);
+			break;
+		case SWAP_IRQ:
+			_CPU.Swap(params);
 			break;
         default: 
             krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");

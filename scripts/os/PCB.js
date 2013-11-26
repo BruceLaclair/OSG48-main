@@ -18,6 +18,7 @@ function PCB(){
 	this.ACCVal = 0;
 	this.priority = 0;
 	this.isDone = false;
+	this.isOnDisk = false;
 	
 	this.init = function(ID, p){
 		this.PID = ID;
@@ -28,6 +29,7 @@ function PCB(){
 		this.ACCVal = 0;
 		this.priority = p;
 		this.isDone = false;
+		this.isOnDisk = false;
 		if(ID === 0)
 		{
 			this.base = _BlockOne;
@@ -38,10 +40,16 @@ function PCB(){
 			this.base = _BlockTwo;
 			this.limit = _BlockTwo+_BlockSize;
 		}
-		else
+		else if(ID === 2)
 		{
 			this.base = _BlockThree;
 			this.limit = _BlockThree+_BlockSize;
+		}
+		else
+		{
+			this.base = 0;
+			this.limit = 0;
+			this.isOnDisk = true;
 		}
 		
 	};
@@ -50,7 +58,7 @@ function PCB(){
 	{
 		if((locale + this.base) > this.limit)
 		{
-			_OSShell.shellKill(this.PID);
+			this.isDone = true;
 			if(!_TsundereMode)
 			{
 				_StdIn.putText("You know you really shouldn't touch things that don't belong to you");
@@ -69,7 +77,7 @@ function PCB(){
 	this.toString = function()
 	{
 		var toBeReturned = "";
-		toBeReturned = " PID: " + this.PID + " PC " + this.PCLoc + " ACC " + this.ACCVal + " Base: " + this.base + " Limit: " + this.limit + " X value: " + this.XRegVal + " Y value: " + this.YRegVal + " Zero: " + this.ZFlagVal;
+		toBeReturned = " PID: " + this.PID + " PC " + this.PCLoc + " ACC " + this.ACCVal + " Base: " + this.base + " Limit: " + this.limit + " X value: " + this.XRegVal + " Y value: " + this.YRegVal + " Zero: " + this.ZFlagVal + " Priority: " +  this.priority + " Is On Disk: " + this.isOnDisk;
 		return toBeReturned;
 	}
 }
