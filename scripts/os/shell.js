@@ -10,7 +10,7 @@ function Shell() {
     // Properties
     this.promptStr   = ">";
     this.commandList = [];
-    this.curses      = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
+    this.curses      = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf], [ybir]";
     this.apologies   = "[sorry], [gomenen], [gomen], [gomenasai]";
     // Methods
     this.init        = shellInit;
@@ -101,10 +101,18 @@ function shellInit() {
 	sc.function = shellQuantum;
 	this.commandList[this.commandList.length] = sc;
 	
+	
+	// setschedule [rr, fcfs, priority]
+	sc = new ShellCommand();
+	sc.command = "setschedule";
+	sc.description = "- Tells me which scheduling algorithm you would like me to use.";
+	sc.function = shellScheduler;
+	this.commandList[this.commandList.length] = sc;
+	
     // shutdown
     sc = new ShellCommand();
     sc.command = "shutdown";
-    sc.description = "- Shuts down the virtual OS but leaves the underlying hardware simulation running.";
+    sc.description = "- Shuts down the virtual OS but leaves the underlying hardware simulation running";
     sc.function = shellShutdown;
     this.commandList[this.commandList.length] = sc;
 
@@ -132,10 +140,53 @@ function shellInit() {
 	// breakme
 	sc = new ShellCommand();
 	sc.command = "breakme";
-	sc.description = "- Use this at your own peril, does not bsod, I pwomise"
+	sc.description = "- Use this at your own peril, does not bsod, I pwomise";
 	sc.function = shellBreak;
 	this.commandList[this.commandList.length] = sc;
+	
+	// format
+	sc = new ShellCommand();
+	sc.command = "format";
+	sc.description = "- Using this will set up the hard drive so that you can create files.";
+	sc.function = shellFormat;
+	this.commandList[this.commandList.length] = sc;
+	
+	// create <String>
+	sc = new ShellCommand();
+	sc.command = "create";
+	sc.description = "- Use this and I will create a new file for you";
+	sc.function = shellCreate;
+	this.commandList[this.commandList.length] = sc;
+	
+	// read <String>
+	sc = new ShellCommand();
+	sc.command = "read";
+	sc.description = "- If you type this I will read the file to you... can't seem to read it yourself.";
+	sc.function = shellRead;
+	this.commandList[this.commandList.length] = sc;
+	
+	// write <String> <String>
+	sc = new ShellCommand();
+	sc.command = "write";
+	sc.description = "- I will write to the file that you specify with what you specify in quotes";
+	sc.function = shellWrite;
+	this.commandList[this.commandList.length] = sc;
+	
+	// delete <String>
+	sc = new ShellCommand();
+	sc.command = "delete";
+	sc.description = "- I will make sure that you never see that filthy dirty file again.";
+	sc.function = shellDelete;
+	this.commandList[this.commandList.length] = sc;
+	
+	// ls
+	sc = new ShellCommand();
+	sc.command = "ls"
+	sc.description = "- Type this and I will list all of the files that are currently created."
+	sc.function = shellList;
+	this.commandList[this.commandList.length] = sc;
 
+	
     // rot13 <string>
     sc = new ShellCommand();
     sc.command = "rot13";
@@ -233,8 +284,8 @@ function shellParseInput(buffer)
     // 1. Remove leading and trailing spaces.
     buffer = trim(buffer);
 
-    // 2. Lower-case it.
-    buffer = buffer.toLowerCase();
+    // 2. Lower-case it.  Well we would if we wanted to lowercase everything see 4.2
+    //buffer = buffer.toLowerCase();
 
     // 3. Separate on spaces so we can determine the command and command-line args, if any.
     var tempList = buffer.split(" ");
@@ -243,8 +294,9 @@ function shellParseInput(buffer)
     var cmd = tempList.shift();  // Yes, you can do that to an array in JavaScript.  See the Queue class.
     // 4.1 Remove any left-over spaces.
     cmd = trim(cmd);
-    // 4.2 Record it in the return value.
-    retVal.command = cmd;
+    // 4.2 Record it in the return value.  Because we do not want to lowercase EVERYTHING that is typed we only care about the command
+	//     I moved the toLowerCase to the command
+    retVal.command = cmd.toLowerCase();
 
     // 5. Now create the args array from what's left.
     for (var i in tempList)
@@ -390,13 +442,19 @@ function shellNihaha(args)
 
 function shellLoad(args)
 {
+
+	var priority = 100;
+	if (args.length === 1)
+    { 
+		priority = args[0];
+	}
 	var programInput = document.getElementById("taProgramInput").value;
 	//checks for the existence of any characters that isn't hex and return true if it is.
 	var hexValidator =  /[g-z]/gi;
 	if(!hexValidator.test(programInput))
 	{
 		document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanHappy.jpg\" alt = \"Natsu-chan\"></label>"
-		if(_NumPrograms >= 3)
+		if(_NumPrograms > 3)
 		{
 			_StdIn.putText("Swrry but my mammaries aren't that large...I meant memories");
 			document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanBlush.jpg\" alt = \"Natsu-chan\"></label>"
@@ -408,7 +466,7 @@ function shellLoad(args)
 			{
 				var i = _BlockOne;
 				_PCB1 = new PCB;
-				_PCB1.init(_NumPrograms);
+				_PCB1.init(_NumPrograms, priority);
 				document.getElementById("RL1").innerHTML=_PCB1.toString();
 				_ResidentList.push(_PCB1.toString());
 			}
@@ -416,29 +474,69 @@ function shellLoad(args)
 			{
 				var i = _BlockTwo;
 				_PCB2 = new PCB;
-				_PCB2.init(_NumPrograms);
+				_PCB2.init(_NumPrograms, priority);
 				document.getElementById("RL2").innerHTML=_PCB2.toString();
 				_ResidentList.push(_PCB2.toString());
 			}
-			else
+			else if(_NumPrograms === 2)
 			{
 				var i = _BlockThree;
 				_PCB3 = new PCB;
-				_PCB3.init(_NumPrograms);
+				_PCB3.init(_NumPrograms, priority);
 				document.getElementById("RL3").innerHTML=_PCB3.toString();
 				_ResidentList.push(_PCB3.toString());
+			}
+			else if(_NumPrograms === 3)
+			{
+				var i = -1;
+				_PCB4 = new PCB;
+				_PCB4.init(_NumPrograms, priority);
+				document.getElementById("RL4").innerHTML=_PCB4.toString();
+				_ResidentList.push(_PCB4.toString());
 			}
 			//Go through the program being entered and add it to memory, the real memory.
 			var toBeEntered = programInput.split(" ");
 			var j = 0;
-			while (j < toBeEntered.length)
+			if(i !== -1)
 			{
-				_Memory.memory[i] = toBeEntered[j];
-				document.getElementById(i).innerHTML=_Memory.memory[i];
-				j++;
-				i++;
+				while (j < toBeEntered.length)
+				{
+					_Memory.memory[i] = toBeEntered[j];
+					document.getElementById(i).innerHTML=_Memory.memory[i];
+					j++;
+					i++;
+				}
+				_StdIn.putText("I assigned it PID: " + _NumPrograms++ + ", but...it's not like I did it for you or anything...");
 			}
-			_StdIn.putText("I assigned it PID: " + _NumPrograms++ + ", but...it's not like I did it for you or anything...");
+			else
+			{
+				if(!_DidFormat)
+				{
+					_ToBePrinted = false;
+					shellFormat();
+					_StdIn.putText("There wasn't enough room in memory so I wrote it to the disk, I hope you're happy");
+					_StdIn.advanceLine();
+					_StdIn.putText("The Disk wasn't formatted so I did that for you");
+					_StdIn.advanceLine();
+				}
+				_FileName = "~SwapFile";
+				_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 1) );
+				while (j < _BlockSize)
+				{
+					if(toBeEntered[j])
+					{
+						_ToBeWritten += toBeEntered[j] + " ";
+						j++;
+					}
+					else
+					{
+						_ToBeWritten += "00 ";
+						j++;
+					}
+				}
+				_FileName = "~SwapFile";
+				_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 2) );
+			}
 			document.getElementById('natsu-chan').innerHTML="<label> Natsu-Chan<br><img src=\"images/Natsu-ChanBlush.jpg\" alt = \"Natsu-chan\"></label>"
 		}
 	}
@@ -561,6 +659,11 @@ function shellRunAll(args)
 		_CPU.Scheduler(_PCB3);
 		document.getElementById("RQ3").innerHTML=_PCB3.toString();
 	}
+	if(_PCB4 != null)
+	{
+		_CPU.Scheduler(_PCB4);
+		document.getElementById("RQ4").innerHTML=_PCB4.toString();
+	}
 };
 
 function shellStatus(args)
@@ -582,7 +685,15 @@ function shellQuantum(args)
 {
 	if (args.length > 0)
 	{
-		_Quantum = args[0];
+		if(_CpuSchedule === "fcfs" || _CpuSchedule === "priority")
+		{
+			_QuantumBackUp = args[0];
+		}
+		else
+		{
+			_Quantum = args[0];
+			_QuantumBackUp = _Quantum;
+		}
 	}
 	else
 	{
@@ -704,6 +815,225 @@ function shellPrompt(args)
     }
 }
 
+function shellFormat(args)
+{
+	_DidFormat = true;
+	_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 0) );  
+	if(_ToBePrinted)
+	{
+		_StdIn.putText("All done, but...d..don't get used to it...it's not like I did it because I wanted to...");
+		_StdIn.advanceLine();
+	}
+	else
+	{
+		_ToBePrinted = true;
+	}
+}
+
+function shellCreate(args)
+{
+	if(_DidFormat)
+	{
+		if (args.length === 0)
+		{
+			if (!_TsundereMode)
+				{
+					_StdIn.putText("you know...I would be happy too...just tell me what you want me to name it");
+				}
+			else
+				{
+					_StdIn.putText("To think...Someone could actually fall in love with someone like you.");
+				}
+		}
+		var tempName = args[0];
+		var nameValidator =  /\W/gi;
+		if(tempName.length < 8 && !nameValidator.test(tempName))
+		{
+			_FileName = "";
+			_FileName = tempName.toLowerCase().trim();
+			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 1) );  
+			_StdIn.putText("Kay that wasn't so bad I created the file " + _FileName + " for you");
+			_StdIn.advanceLine();
+		}
+		else
+		{
+			if (!_TsundereMode)
+				{
+					_StdIn.putText("Please only include letters in the file name and make sure it is less then 8 characters");
+				}
+			else
+				{
+					_StdIn.putText("You are the reason we have to take such limits No more then 8 regular characters");
+				}
+		}
+	}
+	else
+		{
+			if (!_TsundereMode)
+			{
+				_StdIn.putText("Please format first");
+			}
+			else
+			{
+				_StdIn.putText("Eww you sick freak, your not even going to format and clean the disk first?");
+			}
+		}
+}
+
+function shellWrite(args)
+{
+	if(_DidFormat)
+	{
+		if (args.length <= 1)
+		{
+			if (!_TsundereMode)
+				{
+					_StdIn.putText("you know...I would be happy to...just tell me what file you want me to write");
+				}
+			else
+				{
+					_StdIn.putText("To think...Someone could actually fall in love with someone like you.");
+				}
+		}
+		else
+		{
+			var tempName = args[0];
+			var nameValidator =  /\W/gi;
+			_ToBeWritten = "";
+			for(i = 1; i < args.length; i++)
+			{
+				_ToBeWritten += args[i] + " ";
+			}
+			if(tempName.length < 8 && !nameValidator.test(tempName))
+			{
+				_FileName = tempName.toLowerCase().trim();
+				_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 2) ); 
+				_StdIn.putText("I...well I am writing it now but don't get the wrong idea...");
+				_StdIn.advanceLine();				
+			}
+			else
+			{
+				if (!_TsundereMode)
+					{
+						_StdIn.putText("Please only include letters in the file name and make sure it is less then 8 characters");
+					}
+				else
+					{
+						_StdIn.putText("You are the reason we have to take such limits No more then 8 regular characters");
+					}
+			}
+		}
+	}
+	else
+	{
+		if (!_TsundereMode)
+		{
+			_StdIn.putText("Please format first");
+		}
+		else
+		{
+			_StdIn.putText("Eww you sick freak, your not even going to format and clean the disk first?");
+		}
+	}
+}
+
+function shellRead(args)
+{
+	if(_DidFormat)
+	{
+		var tempName = args[0];
+		var nameValidator =  /\W/gi;
+		if(tempName.length < 8 && !nameValidator.test(tempName))
+		{
+			_FileName = tempName.toLowerCase().trim();
+			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 3) ); 
+			for(i = 0; i < _ToBeRead.length; i++)
+			{
+				_StdIn.putText(_ToBeRead[i]);
+			}
+		}
+		else
+		{
+			if (!_TsundereMode)
+				{
+					_StdIn.putText("Please only include letters in the file name and make sure it is less then 8 characters");
+				}
+			else
+				{
+					_StdIn.putText("You are the reason we have to take such limits No more then 8 regular characters");
+				}
+		}
+	}
+	else
+		{
+			if (!_TsundereMode)
+			{
+				_StdIn.putText("Please format first");
+			}
+			else
+			{
+				_StdIn.putText("Eww you sick freak, your not even going to format and clean the disk first?");
+			}
+		}
+}
+
+function shellDelete(args)
+{
+	if(_DidFormat)
+	{
+		var tempName = args[0];
+		var nameValidator =  /\W/gi;
+		if(tempName.length < 8 && !nameValidator.test(tempName))
+		{
+			_FileName = tempName.toLowerCase().trim();
+			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 4) ); 
+			_StdIn.putText("I am removing it right now, just like you wanted.  I am doing good right?");
+			_StdIn.advanceLine();
+		}
+		else
+		{
+			if (!_TsundereMode)
+				{
+					_StdIn.putText("Please only include letters in the file name and make sure it is less then 8 characters");
+				}
+			else
+				{
+					_StdIn.putText("You are the reason we have to take such limits No more then 8 regular characters");
+				}
+		}
+	}
+	else
+		{
+			if (!_TsundereMode)
+			{
+				_StdIn.putText("Please format first");
+			}
+			else
+			{
+				_StdIn.putText("Eww you sick freak, your not even going to format and clean the disk first?");
+			}
+		}
+}
+
+function shellList(args)
+{
+	if(_DidFormat)
+	{
+		_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 5) );
+	}
+	else
+	{
+		if (!_TsundereMode)
+		{
+			_StdIn.putText("Please format first");
+		}
+		else
+		{
+			_StdIn.putText("Eww you sick freak, your not even going to format and clean the disk first?");
+		}
+	}
+}
+
 function shellProcesses(args)
 {
 	if(!_CPU.isExecuting)
@@ -769,11 +1099,11 @@ function shellKill(args)
 		{
 			if (!_TsundereMode)
 			{
-			_StdIn.putText("Sorry I can't kill what doesn't exsist.");
+			_StdIn.putText("Sorry I can't kill what doesn't exist.");
 			}
 		else
 			{
-				_StdIn.putText("Stupidity like yours does not belong in this world, prepare to die.");
+				_StdIn.putText("Stupidity like yours does not belong in this world, please die.");
 			}
 		}
 	}
@@ -788,4 +1118,39 @@ function shellKill(args)
 				_StdIn.putText("Kill what?  I guess you really do have a death wish...well if you insist.");
 			}
 	}
+}
+
+function shellScheduler(args)
+{
+	if (args.length > 0)
+    {
+        if(args[0].toLowerCase() === "fcfs" && _CpuSchedule !== "fcfs")
+		{
+			_QuantumBackup = _Quantum;
+			_Quantum = 1000000;
+			_StdIn.putText("Sooo I set it to First Come First Serve have fun");
+		}
+		else if(args[0].toLowerCase() === "rr" && _CpuSchedule !== "rr")
+		{
+			_Quantum = _QuantumBackup;
+			_StdIn.putText("Sooo I set it to Round Robin have fun");
+		}
+		else if(args[0].toLowerCase() === "priority" && _CpuSchedule !== "priority")
+		{
+			_QuantumBackup = _Quantum;
+			_Quantum = 1000000;
+			_StdIn.putText("Sooo I set it to priority have fun");
+		}
+    }
+    else
+    {
+        if (!_TsundereMode)
+		{
+			_StdIn.putText("Well what method do you want me to use?");
+		}
+		else
+			{
+				_StdIn.putText("Do we really have to go over this again? Honestly I figured you would learn by now");
+			}
+    }
 }

@@ -22,7 +22,13 @@ var KEYBOARD_IRQ = 1;
 
 var CONTEXTSWITCH_IRQ = 2;
 
-var INVALID_OPCODE_IRQ = 3;
+var PRIORITY_IRQ = 3;
+
+var INVALID_OPCODE_IRQ = 4;
+
+var FILE_SYSTEM_IRQ = 5;
+
+var SWAP_IRQ = 6;
 
 
 //
@@ -33,15 +39,14 @@ var _Memory = null;
 var _NumPrograms = 0; //Number of inputed programs so far
 var _CanvasWidth = 800;  // This is the width of the canvas which is important for scrolling.
 
+var _DidFormat = false;
+
 //Setting up all of the possible control blocks
 var _PCB = null;
 var _PCB1 = null;
 var _PCB2 = null;
 var _PCB3 = null;
-/*
-*	To be used later
-*	var _PCB3 = null;
-*/
+var _PCB4 = null;
 
 //Silly things to make things work and stuff...
 
@@ -55,6 +60,22 @@ var _BlockOne = 0;
 var _BlockTwo = 256;
 var _BlockThree = 512;
 var _Quantum = 6;
+var _QuantumBackup = _Quantum;
+var _CpuSchedule = "rr";
+
+//File System Constants
+
+var _MBR = "000";
+var _NumTracks = 4;
+var _NumSectors = 8;
+var _NumBlocks = 8;
+var _FSsize = 64;
+var _WritableChar = 59;
+var _FileName = "";
+var _ToBeWritten = "";
+var _ToBeRead = "";
+var _ToBePrinted = true;
+var _StartingPoint = 0;
 
 var _OSclock = 0;       // Page 23.
 
@@ -92,6 +113,7 @@ var _TsundereMode = false;
 
 // Global Device Driver Objects - page 12
 var krnKeyboardDriver = null;
+var krnHardDriveDriver = null;
 
 // For testing...
 var _GLaDOS = null;
