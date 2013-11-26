@@ -77,6 +77,7 @@ function format()
 			}
 		}
 	}
+	document.getElementById("btnShowMe").disabled = false;
 	localStorage[_MBR] = "I am the Master Bootね";
 }
 
