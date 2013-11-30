@@ -493,6 +493,7 @@ function shellLoad(args)
 				_PCB4.init(_NumPrograms, priority);
 				document.getElementById("RL4").innerHTML=_PCB4.toString();
 				_ResidentList.push(_PCB4.toString());
+				_NumPrograms = 0;
 			}
 			//Go through the program being entered and add it to memory, the real memory.
 			var toBeEntered = programInput.split(" ");
@@ -514,11 +515,11 @@ function shellLoad(args)
 				{
 					_ToBePrinted = false;
 					shellFormat();
-					_StdIn.putText("There wasn't enough room in memory so I wrote it to the disk, I hope you're happy");
-					_StdIn.advanceLine();
 					_StdIn.putText("The Disk wasn't formatted so I did that for you");
 					_StdIn.advanceLine();
 				}
+				_StdIn.putText("There wasn't enough room in memory so I wrote it to the disk, I hope you're happy");
+				_StdIn.advanceLine();
 				_FileName = "~SwapFile";
 				_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 1) );
 				while (j < _BlockSize)
