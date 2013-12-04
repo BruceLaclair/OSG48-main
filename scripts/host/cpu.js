@@ -138,7 +138,7 @@ function Cpu() {
 						if(_ReadyQueue.isEmpty())
 						{
 							_PCB.isDone = true;
-							_PCB.isDone = true;
+							_Memory.init();
 							this.isExecuting = false;
 						}
 						else
@@ -283,8 +283,8 @@ function Cpu() {
 		
 		if(_ReadyQueue.isEmpty())
 		{
-			this.isExecuting = false;
 			_Memory.init();
+			this.isExecuting = false;
 		}
 		
 		_PCB = _ReadyQueue.dequeue();
