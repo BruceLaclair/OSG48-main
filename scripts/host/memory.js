@@ -15,6 +15,7 @@ function memory(){
 		{
 			this.memory[i] = "00";
 			document.getElementById(i).innerHTML=this.memory[i];
+			_NumPrograms = 0;
 		}
 	};
 	
