@@ -422,6 +422,7 @@ function Cpu() {
 				_ToBeWritten += _Memory.memory[j] + " ";
 				j++;
 			}
+			_ToBeRead = "";
 			_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 3) );
 			temp.isOnDisk = true;
 			_PCB.base = temp.base;

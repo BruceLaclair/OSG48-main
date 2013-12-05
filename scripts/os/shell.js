@@ -521,6 +521,7 @@ function shellLoad(args)
 				_StdIn.putText("There wasn't enough room in memory so I wrote it to the disk, I hope you're happy");
 				_StdIn.advanceLine();
 				_FileName = "~SwapFile";
+				_ToBeWritten = "";
 				_KernelInterruptQueue.enqueue( new Interrupt(FILE_SYSTEM_IRQ, 1) );
 				while (j < _BlockSize)
 				{
@@ -944,6 +945,7 @@ function shellRead(args)
 	{
 		var tempName = args[0];
 		var nameValidator =  /\W/gi;
+		_ToBeRead = "";
 		if(tempName.length < 8 && !nameValidator.test(tempName))
 		{
 			_FileName = tempName.toLowerCase().trim();
@@ -1065,6 +1067,11 @@ function shellProcesses(args)
 			_StdIn.putText(_PCB3.toString());
 			_StdIn.advanceLine();
 		}
+		if(!_PCB4.isDon)
+		{
+			_StdIn.putText(_PCB4.toString());
+			_StdIn.advanceLine();
+		}
 	}
 }
 
@@ -1095,6 +1102,10 @@ function shellKill(args)
 		else if(args[0] === "2")
 		{
 			_PCB3.isDone = true;
+		}
+			else if(args[0] === "3")
+		{
+			_PCB4.isDone = true;
 		}
 		else
 		{
