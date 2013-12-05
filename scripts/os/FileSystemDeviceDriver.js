@@ -181,28 +181,30 @@ function read(params)
 	if(locale)
 	{
 		while(!atTheEnd)
-		if(localStorage[locale].indexOf("ね") !== -1)
 		{
-			_ToBeRead += localStorage[locale].substring(4, localStorage[locale].indexOf("ね"));
-			if(_ToBePrinted)
+			if(localStorage[locale].indexOf("ね") !== -1)
 			{
-				for(i = 0; i < _ToBeRead.length; i++)
+				_ToBeRead += localStorage[locale].substring(4, localStorage[locale].indexOf("ね"));
+				if(_ToBePrinted)
 				{
-					_StdIn.putText(_ToBeRead[i]);
+					for(i = 0; i < _ToBeRead.length; i++)
+					{
+						_StdIn.putText(_ToBeRead[i]);
+					}
+					_StdIn.advanceLine();
+					_StdIn.putText(_OsShell.promptStr);
 				}
-				_StdIn.advanceLine();
-				_StdIn.putText(_OsShell.promptStr);
+				else
+				{
+					_CPU.toRead();
+				}
+				atTheEnd = true;
 			}
 			else
 			{
-				_CPU.toRead();
+				_ToBeRead += localStorage[locale].substring(4);
+				locale = localStorage[locale].substring(1,4);
 			}
-			atTheEnd = true;
-		}
-		else
-		{
-			_ToBeRead += localStorage[locale].substring(4);
-			locale = localStorage[locale].substring(1,4);
 		}
 	}
 	else
